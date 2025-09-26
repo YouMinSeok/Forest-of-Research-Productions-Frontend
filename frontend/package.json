@@ -66,15 +66,7 @@
       "react/jsx-no-target-blank": "error",
       "react/no-array-index-key": "warn",
       "react/prop-types": "off",
-      "no-console": [
-        "warn",
-        {
-          "allow": [
-            "warn",
-            "error"
-          ]
-        }
-      ],
+      "no-console": "off",   // 🚨 console.log 허용
       "prefer-const": "error",
       "no-unused-vars": [
         "error",
