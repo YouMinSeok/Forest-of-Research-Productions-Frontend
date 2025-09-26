@@ -155,12 +155,19 @@ api.interceptors.request.use(
                                requestUrl.match(/^\/api\/board\/[^\/]+\/comments$/);   // GET /api/board/{id}/comments
 
         if (!isPublicReadAPI) {
-          // 토큰 제거 및 로그인 페이지로 리다이렉트
-          removeExpiredToken();
+          console.log('🚨 401 오류 - 현재 경로:', window.location.pathname);
 
-          // 현재 페이지가 로그인 페이지가 아니면 리다이렉트
-          if (window.location.pathname !== '/login') {
+          // 로그인 페이지나 회원가입 관련 페이지에서는 리다이렉트하지 않음
+          const authPages = ['/login', '/signup', '/find-password', '/find-username', '/verify-signup'];
+          const isAuthPage = authPages.some(page => window.location.pathname.includes(page));
+
+          if (!isAuthPage) {
+            console.log('🔄 로그인 페이지로 리다이렉트');
+            // 토큰 제거 및 로그인 페이지로 리다이렉트
+            removeExpiredToken();
             window.location.href = '/login';
+          } else {
+            console.log('🔐 인증 페이지에서 401 오류 - 리다이렉트하지 않음');
           }
         } else {
           console.log('📖 공개 읽기 API - 로그인 리다이렉트 없이 계속 진행');
@@ -239,12 +246,19 @@ api.interceptors.response.use(
                                requestUrl.match(/^\/api\/board\/[^\/]+\/comments$/);   // GET /api/board/{id}/comments
 
         if (!isPublicReadAPI) {
-          // 토큰 제거 및 로그인 페이지로 리다이렉트
-          removeExpiredToken();
+          console.log('🚨 401 오류 - 현재 경로:', window.location.pathname);
 
-          // 현재 페이지가 로그인 페이지가 아니면 리다이렉트
-          if (window.location.pathname !== '/login') {
+          // 로그인 페이지나 회원가입 관련 페이지에서는 리다이렉트하지 않음
+          const authPages = ['/login', '/signup', '/find-password', '/find-username', '/verify-signup'];
+          const isAuthPage = authPages.some(page => window.location.pathname.includes(page));
+
+          if (!isAuthPage) {
+            console.log('🔄 로그인 페이지로 리다이렉트');
+            // 토큰 제거 및 로그인 페이지로 리다이렉트
+            removeExpiredToken();
             window.location.href = '/login';
+          } else {
+            console.log('🔐 인증 페이지에서 401 오류 - 리다이렉트하지 않음');
           }
         } else {
           console.log('📖 공개 읽기 API - 로그인 리다이렉트 없이 계속 진행');
