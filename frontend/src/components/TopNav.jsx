@@ -8,40 +8,8 @@ import {
   faUser,
   faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
+import { getCurrentUser, logoutUser } from '../services/api';
 import './TopNav.css';
-
-
-// 환경변수 기반 API URL 설정 (api.js와 동일한 방식)
-const getApiBaseUrl = () => {
-  // 우선순위: REACT_APP_BACKEND_URL > REACT_APP_API_BASE_URL > 호스트+포트 조합
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
-
-  if (backendUrl) {
-    return backendUrl;
-  }
-
-  if (apiBaseUrl) {
-    return apiBaseUrl;
-  }
-
-  // 로컬 개발용 호스트+포트 조합 (fallback)
-  const hostIp = process.env.REACT_APP_HOST_IP;
-  const port = process.env.REACT_APP_API_PORT || '8080';
-
-  if (!hostIp) {
-    // 기본값으로 localhost 사용
-    console.warn('환경변수가 설정되지 않았습니다. 기본값 localhost:8000을 사용합니다.');
-    return 'http://localhost:8000';
-  }
-
-  const protocol = port === '443' || port === '80' ? 'https' : 'http';
-  const portSuffix = (port === '443' || port === '80') ? '' : `:${port}`;
-
-  return `${protocol}://${hostIp}${portSuffix}`;
-};
-
-const backendUrl = getApiBaseUrl();
 
 function TopNav({ onSidebarTypeChange }) {
   const navigate = useNavigate();
@@ -54,16 +22,8 @@ function TopNav({ onSidebarTypeChange }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/auth/me`, {
-          method: "GET",
-          credentials: "include",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
+        const userData = await getCurrentUser();
+        setUser(userData);
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
           console.log("사용자 인증 검증 실패 - 오프라인 또는 서버 연결 문제");
@@ -102,26 +62,9 @@ function TopNav({ onSidebarTypeChange }) {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      // 서버 응답과 관계없이 클라이언트에서 토큰 제거
-      sessionStorage.removeItem('access_token');
-      localStorage.removeItem('access_token');
-      sessionStorage.removeItem('user');
-      localStorage.removeItem('user');
-
-      if (res.ok) {
-        setUser(null);
-        navigate("/");
-      } else {
-        // 서버 로그아웃 실패해도 클라이언트 토큰은 이미 제거했으므로 홈으로 이동
-        setUser(null);
-        navigate("/");
-        alert("로그아웃에 실패했지만 클라이언트에서 로그아웃 처리했습니다.");
-      }
+      await logoutUser();
+      setUser(null);
+      navigate("/");
     } catch (error) {
       // 네트워크 오류여도 클라이언트 토큰은 이미 제거했으므로 홈으로 이동
       setUser(null);
