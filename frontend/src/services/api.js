@@ -45,9 +45,17 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // JWT 토큰 자동 첨부 (우선순위: sessionStorage > localStorage > cookie)
-    const token = sessionStorage.getItem('access_token') ||
-                  localStorage.getItem('access_token') ||
-                  getCookie('access_token');
+    const sessionToken = sessionStorage.getItem('access_token');
+    const localToken = localStorage.getItem('access_token');
+    const cookieToken = getCookie('access_token');
+    const token = sessionToken || localToken || cookieToken;
+
+    console.log('🔍 토큰 확인:', {
+      sessionToken: sessionToken ? '있음' : '없음',
+      localToken: localToken ? '있음' : '없음',
+      cookieToken: cookieToken ? '있음' : '없음',
+      selectedToken: token ? '선택됨' : '없음'
+    });
 
     if (token) {
       // 토큰 만료 확인
