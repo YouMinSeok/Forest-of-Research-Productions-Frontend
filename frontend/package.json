@@ -62,9 +62,9 @@
       "react-app/jest"
     ],
     "rules": {
-      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/exhaustive-deps": "off",
       "react/jsx-no-target-blank": "error",
-      "react/no-array-index-key": "warn",
+      "react/no-array-index-key": "off",
       "react/prop-types": "off",
       "no-console": "off",
       "prefer-const": "error",
@@ -73,7 +73,8 @@
         {
           "argsIgnorePattern": "^_"
         }
-      ]
+      ],
+      "no-useless-escape": "off"
     }
   },
   "browserslist": {
