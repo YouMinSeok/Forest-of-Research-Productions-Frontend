@@ -1,0 +1,629 @@
+/* 기본 Skeleton 스타일 */
+.skeleton-base {
+  background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  display: block; /* inline-block에서 block으로 변경 */
+  position: relative;
+  overflow: hidden;
+  min-height: 1rem; /* 최소 높이 보장 */
+  width: 100%; /* 너비 보장 */
+  will-change: transform, opacity; /* 성능 최적화 */
+}
+
+/* Dark mode 지원 */
+@media (prefers-color-scheme: dark) {
+  .skeleton-base {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  }
+}
+
+/* Skeleton 변형 */
+.skeleton-rectangular {
+  border-radius: 4px;
+}
+
+.skeleton-circular {
+  border-radius: 50%;
+}
+
+.skeleton-text {
+  border-radius: 4px;
+  height: 1rem;
+}
+
+/* 기존 애니메이션 */
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-wave {
+  animation: skeleton-wave 2s linear infinite;
+}
+
+/* 새로운 애니메이션 - Shimmer 효과 */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 0%,
+    #f3f4f6 50%,
+    #e5e7eb 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* 새로운 애니메이션 - Fade 효과 */
+.skeleton-fade {
+  animation: skeleton-fade 2s ease-in-out infinite;
+}
+
+/* 애니메이션 키프레임 */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+    background-color: #e5e7eb;
+  }
+  50% {
+    opacity: 0.7;
+    background-color: #f3f4f6;
+  }
+}
+
+@keyframes skeleton-wave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes skeleton-fade {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+}
+
+/* 점진적 페이드인 애니메이션 */
+@keyframes skeleton-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 성능 최적화된 스켈레톤 그룹 */
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  contain: layout style; /* CSS containment for performance */
+}
+
+.skeleton-group > * {
+  transform: translateZ(0); /* GPU 가속 활성화 */
+}
+
+/* 텍스트 컨테이너 최적화 */
+.skeleton-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* 카드 Skeleton */
+.skeleton-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.skeleton-card-image {
+  width: 100%;
+  border-radius: 0;
+}
+
+.skeleton-card-content {
+  padding: 1rem;
+}
+
+.skeleton-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.skeleton-card-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+/* 리스트 아이템 Skeleton */
+.skeleton-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 80px; /* 최소 높이 보장 */
+  background-color: white; /* 배경색 명시 */
+  border-radius: 4px; /* 둥근 모서리 */
+  margin-bottom: 8px; /* 간격 추가 */
+}
+
+.skeleton-list-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-list-title {
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-list-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* 뉴스, 공지사항, 회의기록 스켈레톤 전용 스타일 */
+.news-skeleton, .notice-skeleton, .meeting-skeleton {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+/* 테이블 Skeleton */
+.skeleton-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.skeleton-table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.skeleton-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.skeleton-table-row:last-child {
+  border-bottom: none;
+}
+
+/* 프로필 Skeleton */
+.skeleton-profile {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 300ms ease-in-out;
+}
+
+.skeleton-profile:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.skeleton-profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-profile-name {
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-profile-title {
+  margin-bottom: 1rem;
+}
+
+/* 향상된 호버 효과 */
+.skeleton-base:hover {
+  animation-duration: 1s; /* 호버 시 애니메이션 가속 */
+}
+
+/* 로딩 상태별 스타일 */
+.skeleton-base[data-loading="true"] {
+  opacity: 1;
+}
+
+.skeleton-base[data-loading="false"] {
+  animation: skeleton-fade-out 300ms ease-out forwards;
+}
+
+@keyframes skeleton-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+  .skeleton-base {
+    background-size: 400% 100%; /* 모바일에서 더 빠른 애니메이션 */
+  }
+
+  .skeleton-wave {
+    animation-duration: 1.5s; /* 모바일에서 더 빠른 wave */
+  }
+
+  .skeleton-shimmer {
+    animation-duration: 1.3s; /* 모바일에서 더 빠른 shimmer */
+  }
+
+  .skeleton-card-content {
+    padding: 0.75rem;
+  }
+
+  .skeleton-list-item {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .skeleton-table-header,
+  .skeleton-table-row {
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 0.75rem;
+  }
+
+  .skeleton-profile {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+/* 고성능 모드 - 배터리 절약 */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-pulse,
+  .skeleton-wave,
+  .skeleton-shimmer,
+  .skeleton-fade {
+    animation: none;
+  }
+
+  .skeleton-base {
+    background: #e5e7eb;
+  }
+
+  /* 단순한 펄스 효과만 유지 */
+  .skeleton-base::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    animation: skeleton-simple-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-simple-pulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* 다크모드 개선 */
+@media (prefers-color-scheme: dark) {
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+  }
+
+  .skeleton-fade {
+    opacity: 0.6;
+  }
+}
+
+/* 고대비 모드 최적화 */
+@media (prefers-contrast: high) {
+  .skeleton-base {
+    background: #666;
+    border: 1px solid #000;
+  }
+
+  .skeleton-pulse,
+  .skeleton-wave,
+  .skeleton-shimmer,
+  .skeleton-fade {
+    animation: none;
+  }
+
+  /* 고대비에서는 단순한 점멸 효과 */
+  .skeleton-base {
+    animation: skeleton-high-contrast-blink 1s step-end infinite;
+  }
+}
+
+@keyframes skeleton-high-contrast-blink {
+  0%, 50% { background-color: #666; }
+  51%, 100% { background-color: #888; }
+}
+
+/* 스켈레톤 컨테이너 최적화 */
+.skeleton-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+  min-height: 60px; /* 컨테이너 최소 높이 */
+}
+
+.skeleton-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+  animation: inherit;
+  pointer-events: none;
+}
+
+/* 채팅 메시지 Skeleton */
+.skeleton-chat-message {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: white; /* 배경색 명시 */
+  border-radius: 8px; /* 둥근 모서리 */
+  border: 1px solid #e5e7eb; /* 테두리 추가 */
+}
+
+.skeleton-chat-message.own {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+.skeleton-message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 70%;
+}
+
+.skeleton-chat-message.own .skeleton-message-content {
+  align-items: flex-end;
+}
+
+.skeleton-message-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  background-color: #f1f3f4;
+  min-height: 40px; /* 최소 높이 보장 */
+}
+
+.skeleton-chat-message.own .skeleton-message-bubble {
+  background-color: #e3f2fd;
+}
+
+.skeleton-message-sender {
+  margin-bottom: 0.25rem;
+}
+
+.skeleton-message-text {
+  margin-bottom: 0.25rem;
+}
+
+.skeleton-message-time {
+  align-self: flex-end;
+}
+
+.skeleton-chat-message.own .skeleton-message-time {
+  align-self: flex-start;
+}
+
+/* 검색 결과 Skeleton */
+.skeleton-search-result {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 0.5rem;
+  background-color: white; /* 배경색 명시 */
+  min-height: 60px; /* 최소 높이 보장 */
+}
+
+.skeleton-search-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+/* 프로필 스켈레톤 개선 */
+.profile-skeleton {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 200px; /* 최소 높이 보장 */
+}
+
+/* 검색/채팅 스켈레톤 아이템 강화 */
+.search-skeleton-item, .chat-skeleton-item {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 4px;
+}
+
+/* 마이메뉴 Skeleton */
+.mymenu-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.stats-skeleton {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .skeleton-table-header,
+  .skeleton-table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .skeleton-card-header {
+    gap: 0.5rem;
+  }
+
+  .skeleton-list-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stats-skeleton {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-chat-message {
+    padding: 0.25rem;
+    gap: 0.25rem;
+  }
+
+  .skeleton-message-content {
+    max-width: 85%;
+  }
+}
+
+/* 접근성 */
+.skeleton-base:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* 스크린 리더용 */
+.skeleton-base[aria-label] {
+  position: relative;
+}
+
+.skeleton-base[aria-label]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+/* 성능 최적화 및 GPU 가속 */
+.skeleton-base,
+.skeleton-card,
+.skeleton-list-item,
+.skeleton-profile {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 스켈레톤 로더 컨테이너 */
+.skeleton-loader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: 300px; /* 최소 높이 보장 */
+  animation: skeleton-container-fade-in 400ms ease-out;
+}
+
+@keyframes skeleton-container-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 동적 로딩 인디케이터 */
+.skeleton-loading-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  transition: width 300ms ease-out;
+  border-radius: 1px;
+}
+
+/* 스켈레톤 성능 최적화 팁 */
+.skeleton-optimized {
+  contain: layout style paint;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+}

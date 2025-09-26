@@ -1,0 +1,75 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .link-modal {
+    width: 400px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f7f7f7;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .modal-body {
+    padding: 1rem;
+  }
+  .modal-url-input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+  .modal-preview {
+    text-align: center;
+  }
+  .modal-preview img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+  }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #eee;
+  }
+  .modal-confirm-btn,
+  .modal-cancel-btn {
+    padding: 0.4rem 1rem;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .modal-confirm-btn:hover,
+  .modal-cancel-btn:hover {
+    background: #f0f0f0;
+  }
+  

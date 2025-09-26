@@ -1,0 +1,573 @@
+/* ==================================================================
+   CafeWritePost.css (최종 수정본)
+   ================================================================== */
+
+/* 바깥 래퍼 */
+.cafe-write-container {
+  max-width: 900px;
+  margin: 1rem auto;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 헤더 */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+.header-left {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+}
+.header-submit-btn {
+  background-color: #388e3c;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.header-submit-btn:hover {
+  background-color: #2e7d32;
+}
+.header-submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.header-submit-btn:disabled:hover {
+  background-color: #ccc;
+}
+/* 글쓰기 아래 가로선 두께 조정 */
+.header-line {
+  border: none;
+  border-top: 2px solid #666;
+  margin: 0 0 1rem 0;
+}
+
+/* 폼 본문 */
+.cafe-write-form {
+  width: 100%;
+}
+
+/* 상단 (게시판/말머리 + 제목) */
+.top-area {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.board-prefix-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+.input-group label {
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+.input-group select,
+.input-group input {
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-group select:focus,
+.input-group input:focus {
+  border-bottom-color: #0078ff;
+}
+.title-box {
+  background-color: #f9fafb;
+  padding: 1rem 1.2rem;
+}
+.title-box input {
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 400;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+.title-box input::placeholder {
+  color: #999;
+}
+
+/* 본문(Quill) + 태그 */
+.quill-wrap {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background-color: #fff;
+}
+.ql-toolbar.ql-snow {
+  background-color: #f9fafb;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+.ql-container.ql-snow {
+  background-color: #fff;
+  border: none;
+  border-radius: 0;
+  min-height: 300px;
+  padding: 1rem;
+}
+
+/* 태그 영역 (본문과 함께) */
+.tag-area {
+  border-top: 1px solid #eee;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.tag-area label {
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.tag-area input {
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.tag-area input:focus {
+  border-bottom-color: #0078ff;
+}
+
+/* =================== 커스텀 툴바 =================== */
+#custom-toolbar {
+  background-color: #f9fafb;
+  border-bottom: 1px solid #ccc;
+  padding: 8px 12px;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+.toolbar-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0;
+}
+.toolbar-line.file-tools {
+  padding: 8px 16px;
+  min-height: auto;
+  margin-bottom: 0;
+}
+.ql-formats {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 툴바 내 버튼 및 선택 요소 스타일 */
+#custom-toolbar .ql-formats button,
+#custom-toolbar .ql-formats select {
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+#custom-toolbar .ql-formats button:hover {
+  background-color: #e0e0e0;
+}
+/* Quill 기본 아이콘 내용 제거 */
+.ql-snow .ql-toolbar button.ql-image::before,
+.ql-snow .ql-toolbar button.ql-video::before,
+.ql-snow .ql-toolbar button.ql-file::before,
+.ql-snow .ql-toolbar button.ql-link::before,
+.ql-snow .ql-toolbar button.ql-bold::before,
+.ql-snow .ql-toolbar button.ql-italic::before,
+.ql-snow .ql-toolbar button.ql-underline::before,
+.ql-snow .ql-toolbar button.ql-strike::before,
+.ql-snow .ql-toolbar button.ql-list::before,
+.ql-snow .ql-toolbar button.ql-clean::before {
+  content: none !important;
+}
+.ql-font-notoSansKR {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+.ql-font-nanumGothic {
+  font-family: 'Nanum Gothic', sans-serif !important;
+}
+.ql-font-nanumMyeongjo {
+  font-family: 'Nanum Myeongjo', serif !important;
+}
+.ql-font-nanumSquare {
+  font-family: 'Nanum Square', sans-serif !important;
+}
+
+/* ==================== 첨부파일 영역 ====================
+   파일 업로드 기능이 제거되었으므로 아래 영역은 삭제하거나
+   주석 처리하시면 됩니다.
+------------------------------------------------------------- */
+/* Quill 에디터 Word/한글 서식 보존 스타일 */
+.ql-editor {
+  white-space: pre-wrap !important; /* 공백과 줄바꿈 보존 */
+  font-family: 'Noto Sans KR', sans-serif; /* 원본 문서와 유사한 폰트 */
+  line-height: 1.6; /* 줄 간격 조정 */
+}
+
+.ql-editor p {
+  white-space: pre-wrap !important; /* 문단 내 공백 보존 */
+  margin: 0 0 0.5em 0; /* 문단 간격 최소화 */
+  padding: 0; /* 기본 패딩 제거 */
+}
+
+/* Word/한글에서 오는 들여쓰기 처리 - 확장된 레벨 지원 */
+.ql-editor .ql-indent-1 { margin-left: 3em !important; }
+.ql-editor .ql-indent-2 { margin-left: 6em !important; }
+.ql-editor .ql-indent-3 { margin-left: 9em !important; }
+.ql-editor .ql-indent-4 { margin-left: 12em !important; }
+.ql-editor .ql-indent-5 { margin-left: 15em !important; }
+.ql-editor .ql-indent-6 { margin-left: 18em !important; }
+.ql-editor .ql-indent-7 { margin-left: 21em !important; }
+.ql-editor .ql-indent-8 { margin-left: 24em !important; }
+
+/* Word 문서의 기본 들여쓰기 스타일 지원 */
+.ql-editor p[style*="margin-left"],
+.ql-editor div[style*="margin-left"] {
+  /* Word에서 오는 인라인 margin-left 스타일 보존 */
+}
+
+/* text-indent를 margin-left로 변환 */
+.ql-editor p[style*="text-indent"],
+.ql-editor div[style*="text-indent"] {
+  text-indent: 0 !important; /* 기본 text-indent 제거 */
+}
+
+/* 굵은 글씨 스타일 강화 */
+.ql-editor strong, .ql-editor b {
+  font-weight: 700 !important;
+}
+
+/* 기울임꼴 스타일 */
+.ql-editor em, .ql-editor i {
+  font-style: italic !important;
+}
+
+/* 밑줄 스타일 */
+.ql-editor u {
+  text-decoration: underline !important;
+}
+
+/* 프라이버시 옵션 스타일 개선 */
+.privacy-options {
+  margin: 25px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.privacy-options:hover {
+  border-color: #cbd5e0;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.privacy-options h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.privacy-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.privacy-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 0;
+}
+
+.privacy-item label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 14px;
+  color: #495057;
+  font-weight: normal;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.privacy-item input[type="checkbox"] {
+  margin-right: 8px;
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.privacy-notice {
+  margin-top: 12px;
+  padding: 12px 15px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #856404;
+  line-height: 1.4;
+}
+
+/* 제목 박스 간격 조정 */
+.title-box {
+  margin-top: 25px;
+  margin-bottom: 20px;
+}
+
+/* 툴바와 에디터 간격 조정 */
+#custom-toolbar {
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+/* 첨부파일 영역 간격 조정 */
+.attachment-area {
+  margin-top: 30px;
+  padding: 20px 0;
+  margin-bottom: 20px;
+  border-top: 2px solid #e9ecef;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+  .privacy-options {
+    margin: 20px 0;
+    padding: 15px;
+  }
+
+  .privacy-item label {
+    font-size: 13px;
+  }
+
+  .privacy-notice {
+    font-size: 11px;
+    margin-top: 12px;
+    padding: 8px 12px;
+  }
+
+  .title-box {
+    margin-top: 20px;
+    margin-bottom: 15px;
+  }
+
+  #custom-toolbar {
+    margin-top: 20px;
+  }
+
+  .attachment-area {
+    margin-top: 25px;
+    padding: 15px 0;
+  }
+}
+
+/* ==================================================================
+   임시저장 기능 스타일
+   ================================================================== */
+
+/* 임시저장 표시 인디케이터 */
+.draft-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  border: 1px solid #c8e6c9;
+}
+
+.draft-indicator .saving {
+  color: #ff9800;
+  margin-left: 5px;
+  animation: pulse 1.5s infinite;
+}
+
+.draft-indicator .saved {
+  color: #666;
+  margin-left: 5px;
+  font-size: 0.7rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* 헤더 우측 버튼 그룹 */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 임시저장 목록 버튼 */
+.draft-list-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.draft-list-btn:hover {
+  background-color: #1976d2;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+/* 임시저장 목록 컨테이너 */
+.draft-list-container {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin: 15px 0;
+  padding: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 자동저장 상태 표시 */
+.auto-save-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+}
+
+.auto-save-indicator.show {
+  opacity: 1;
+}
+
+.auto-save-indicator.hide {
+  opacity: 0;
+}
+
+/* 임시저장된 글 로드 표시 */
+.draft-loaded-indicator {
+  background-color: #fff3e0;
+  border: 1px solid #ffcc02;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+}
+
+.draft-loaded-text {
+  color: #f57c00;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.draft-loaded-text::before {
+  content: "📝";
+  margin-right: 8px;
+}
+
+.draft-loaded-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.draft-clear-btn {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.draft-clear-btn:hover {
+  background-color: #f57c00;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .header-right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+  }
+
+  .draft-list-btn {
+    margin-bottom: 5px;
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .draft-indicator {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+
+  .auto-save-indicator {
+    top: 10px;
+    right: 10px;
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .draft-loaded-indicator {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .draft-loaded-actions {
+    align-self: stretch;
+  }
+}

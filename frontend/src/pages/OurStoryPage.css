@@ -1,0 +1,11 @@
+/* src/pages/OurStoryPage.css */
+.ourstory-page {
+    padding: 1rem;
+    background-color: #fff;
+  }
+  
+  .ourstory-page h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  

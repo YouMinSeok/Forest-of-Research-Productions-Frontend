@@ -1,0 +1,118 @@
+/* src/pages/CafePage.css */
+/* 연구카페(자료카페) 전용 스타일 */
+
+/* 상위 컨테이너 */
+.cafe-wrapper {
+    padding: 1rem;
+    background-color: #ffffff;
+    animation: fadeInMain 0.4s ease-in;
+  }
+  @keyframes fadeInMain {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  
+  .cafe-title {
+    font-size: 1.2rem;
+    color: #2e7d32;
+    margin-bottom: 1rem;
+  }
+  
+  /* 탭 메뉴 */
+  .research-tabs-container {
+    margin-bottom: 1rem;
+  }
+  .research-tabs {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 2px solid #666;
+    background-color: #f0f0f0;
+  }
+  .research-tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    border-right: 1px solid #ccc;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  .research-tab-item:last-child {
+    border-right: none;
+  }
+  .research-tab-item:hover {
+    background-color: #ecffec;
+    transform: scale(1.03);
+  }
+  .research-tab-item.active {
+    background-color: #c8f7c5;
+    color: #2e7d32;
+    font-weight: 600;
+  }
+  
+  /* 2컬럼 게시판 */
+  .board-lr-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .board-list {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .board-list-item {
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    font-size: 0.9rem;
+    color: #333;
+    border: 1px solid #eee;
+  }
+  .board-list-item:hover {
+    background-color: #fff7e6;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
+  .board-title {
+    margin-right: 0.3rem;
+    font-weight: 500;
+  }
+  
+  /* 페이지네이션 스타일 */
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  .page-btn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+  .page-btn:hover {
+    background-color: #fff7e6;
+  }
+  .page-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .page-info {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  

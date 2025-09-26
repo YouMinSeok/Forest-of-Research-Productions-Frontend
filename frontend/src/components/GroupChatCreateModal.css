@@ -1,0 +1,385 @@
+/* GroupChatCreateModal.css */
+.group-chat-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 10001 !important;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.group-chat-modal {
+  background: white !important;
+  border-radius: 12px;
+  width: 450px;
+  max-width: 95vw;
+  max-height: calc(100vh - 40px);
+  min-height: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden;
+  position: relative !important;
+  z-index: 10002 !important;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8f9fa;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.modal-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modal-header .close-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.modal-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+}
+
+.group-name-section,
+.member-search-section,
+.selected-members-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-name-section label,
+.member-search-section label,
+.selected-members-section label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.group-name-input,
+.member-search-input {
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.group-name-input:focus,
+.member-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.search-input-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.selected-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.selected-member-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e0f2fe;
+  border: 1px solid #b3e5fc;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.selected-member-item .member-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.selected-member-item .member-info i {
+  color: #0284c7;
+  font-size: 16px;
+}
+
+.remove-member-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 12px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.remove-member-btn:hover {
+  background: #f1f5f9;
+  color: #374151;
+}
+
+.search-results-section {
+  min-height: 180px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.loading-state i {
+  font-size: 24px;
+  color: #3b82f6;
+}
+
+.empty-state i {
+  font-size: 32px;
+  color: #d1d5db;
+}
+
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+  background: #f8f9fa;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item .user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.search-result-item .user-info i {
+  font-size: 24px;
+  color: #9ca3af;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.user-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.add-member-btn {
+  background: #e0f2fe;
+  border: 1px solid #b3e5fc;
+  color: #0284c7;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+}
+
+.add-member-btn:hover {
+  background: #0284c7;
+  color: white;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.create-group-btn,
+.cancel-btn {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.create-group-btn {
+  background: #059669;
+  color: white;
+  border: 1px solid #059669;
+}
+
+.create-group-btn:hover:not(:disabled) {
+  background: #047857;
+  border-color: #047857;
+}
+
+.create-group-btn:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cancel-btn {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* 스크롤바 스타일링 */
+.search-results-section::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-results-section::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.search-results-section::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.search-results-section::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+  .group-chat-modal {
+    width: 95vw;
+    max-height: calc(100vh - 20px);
+  }
+
+  .modal-content {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .create-group-btn,
+  .cancel-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .search-results-section {
+    max-height: 160px;
+  }
+}

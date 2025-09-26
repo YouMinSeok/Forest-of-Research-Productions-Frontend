@@ -1,0 +1,587 @@
+/* 모던 파일 첨부 컴포넌트 스타일 */
+.file-attachment-container {
+  margin: 32px 0;
+  position: relative;
+}
+
+/* === 파일 업로드 영역 === */
+.file-upload-area {
+  margin-bottom: 40px;
+}
+
+.file-drop-zone {
+  position: relative;
+  border: 2px dashed rgba(59, 130, 246, 0.3);
+  border-radius: 20px;
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  overflow: hidden;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-drop-zone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.file-drop-zone:hover {
+  border-color: rgb(59, 130, 246);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15);
+}
+
+.file-drop-zone:hover::before {
+  opacity: 1;
+}
+
+.file-drop-zone.drag-over {
+  border-color: rgb(59, 130, 246);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  transform: scale(1.02) translateY(-4px);
+  box-shadow: 0 25px 60px rgba(59, 130, 246, 0.25);
+}
+
+.file-drop-zone.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+  filter: grayscale(50%);
+}
+
+.drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgb(59, 130, 246), rgb(147, 51, 234));
+  color: white;
+  font-size: 40px;
+  margin-bottom: 8px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+}
+
+.file-drop-zone:hover .upload-icon {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+}
+
+.drop-zone-content p {
+  margin: 0;
+  color: #475569;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+}
+
+.upload-info {
+  font-size: 16px !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px 24px;
+  border-radius: 30px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* === 첨부파일 목록 === */
+.attachments-list {
+  margin-top: 32px;
+}
+
+.attachments-title {
+  margin: 0 0 24px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
+  position: relative;
+}
+
+.attachments-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 2px;
+}
+
+.attachments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.attachment-item {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  /* 최소 높이 설정으로 레이아웃 안정성 확보 */
+  min-height: 120px;
+}
+
+.attachment-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.attachment-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.attachment-item:hover::before {
+  opacity: 1;
+}
+
+.attachment-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  /* 삭제 버튼 공간을 충분히 확보 */
+  padding-right: 60px;
+  position: relative;
+}
+
+.file-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  font-size: 24px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.file-info {
+  flex: 1;
+  min-width: 0;
+  /* 삭제 버튼과 절대 겹치지 않도록 충분한 여백 */
+  max-width: calc(100% - 70px);
+  overflow: hidden;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+  font-size: 16px;
+  line-height: 1.3;
+  /* 한 줄로 제한하고 ... 처리 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 삭제 버튼과 절대 겹치지 않게 최대 너비 제한 */
+  max-width: 100%;
+}
+
+.file-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  /* 뱃지들이 겹치지 않도록 충분한 공간 확보 */
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+.file-type-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 상태 뱃지 컨테이너 */
+.file-status-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+/* 상태 뱃지 공통 스타일 */
+.status-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
+  border: none;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 중복 파일 뱃지 */
+.duplicate-badge {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  box-shadow: 0 2px 4px rgba(243, 156, 18, 0.3);
+}
+
+/* 임시저장 뱃지 */
+.draft-badge {
+  background: linear-gradient(135deg, #ffa500, #ff8c00);
+  box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3);
+}
+
+/* 정식 파일 뱃지 */
+.published-badge {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+/* DRAFT 첨부파일 뱃지 */
+.draft-attachment-badge {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  box-shadow: 0 2px 4px rgba(155, 89, 182, 0.3);
+}
+
+/* 해시 태그 스타일 */
+.file-meta span:last-child {
+  font-size: 10px;
+  color: #94a3b8;
+  font-family: 'Consolas', 'Monaco', monospace;
+  background: #f8fafc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  z-index: 10;
+  /* 항상 표시되도록 변경 */
+  opacity: 0.7;
+}
+
+.attachment-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+  opacity: 1 !important;
+}
+
+/* === 업로드 진행 상황 === */
+.upload-progress-section {
+  margin: 24px 0;
+}
+
+.upload-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.upload-item.completed {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border-color: #10b981;
+}
+
+.upload-item.error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fef1f1 100%);
+  border-color: #ef4444;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* === 반응형 디자인 === */
+@media (max-width: 768px) {
+  .attachments-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .file-drop-zone {
+    padding: 32px 20px;
+    min-height: 160px;
+  }
+
+  .upload-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+
+  .drop-zone-content p {
+    font-size: 18px;
+  }
+
+  .upload-info {
+    font-size: 14px !important;
+    padding: 10px 20px;
+  }
+
+  .attachment-item {
+    padding: 16px;
+    min-height: 100px;
+  }
+
+  .attachment-content {
+    padding-right: 50px;
+  }
+
+  .file-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .file-name {
+    font-size: 15px;
+    /* 모바일에서도 한 줄로 제한 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-info {
+    max-width: calc(100% - 60px);
+  }
+
+  .file-status-badges {
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .file-meta {
+    gap: 4px;
+  }
+
+  .file-size {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .file-type-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .delete-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .file-drop-zone {
+    padding: 24px 16px;
+    min-height: 140px;
+  }
+
+  .upload-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .drop-zone-content p {
+    font-size: 16px;
+  }
+
+  .upload-info {
+    font-size: 12px !important;
+    padding: 8px 16px;
+  }
+
+  .attachment-content {
+    gap: 10px;
+    padding-right: 45px;
+  }
+
+  .file-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .file-name {
+    font-size: 14px;
+    /* 초소형 화면에서도 한 줄로 제한 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-info {
+    max-width: calc(100% - 55px);
+  }
+
+  .file-status-badges {
+    gap: 3px;
+    margin-bottom: 5px;
+  }
+
+  .status-badge {
+    font-size: 8px;
+    padding: 2px 5px;
+  }
+
+  .file-meta {
+    gap: 3px;
+  }
+
+  .file-size {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+
+  .file-type-badge {
+    font-size: 9px;
+    padding: 2px 5px;
+  }
+
+  .file-meta span:last-child {
+    font-size: 9px;
+    padding: 1px 4px;
+    max-width: 60px;
+  }
+
+  .delete-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+    top: 8px;
+    right: 8px;
+  }
+}
+
+/* === 에러 메시지 === */
+.error-message {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #dc2626;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #fecaca;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.error-message::before {
+  content: '⚠️';
+  font-size: 18px;
+}

@@ -1,0 +1,701 @@
+/* AI 사이드바 - GamsGo 스타일 */
+
+/* 오버레이 애니메이션 제거 - 사이드바는 오버레이 없음 */
+@keyframes sidebarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sidebarSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 타이핑 애니메이션 */
+@keyframes typingBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes typingDots {
+  0%, 20% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(0); }
+}
+
+@keyframes aiPulse {
+  0%, 50%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* AI 사이드바 컨테이너 */
+.ai-sidebar-container {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none; /* 배경 클릭 가능하게 */
+}
+
+.ai-sidebar-container.open {
+  pointer-events: auto;
+}
+
+/* 사이드바 토글 버튼 */
+.ai-sidebar-toggle {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  z-index: 1001;
+}
+
+.ai-sidebar-toggle:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* AI 사이드바 */
+.ai-sidebar {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  width: 480px; /* 380px에서 480px로 확대 */
+  height: 650px; /* 500px에서 650px로 확대 */
+  max-height: 80vh; /* 70vh에서 80vh로 확대 */
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px; /* 16px에서 28px로 더 둥글게 */
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 5px 25px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8); /* 더 고급스러운 그림자 효과 */
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  animation: sidebarSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+  backdrop-filter: blur(10px); /* 블러 효과 추가 */
+}
+
+.ai-sidebar-container.closed .ai-sidebar {
+  animation: sidebarSlideOut 0.3s ease-in-out forwards;
+}
+
+.ai-sidebar.minimized {
+  width: 60px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 20px;
+}
+
+.ai-sidebar.minimized:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ai-sidebar.minimized .ai-icon {
+  font-size: 24px;
+  color: #667eea;
+  animation: aiPulse 2s infinite;
+}
+
+.ai-sidebar.minimized:hover .ai-icon {
+  color: white;
+}
+
+/* 헤더 */
+.ai-sidebar-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px; /* 20px에서 24px로 확대 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 28px 28px 0 0; /* 상단 모서리를 헤더에서 처리 */
+}
+
+.ai-sidebar-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+.ai-sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ai-icon {
+  font-size: 20px;
+  animation: aiPulse 2s infinite;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.ai-sidebar-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.ai-control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 12px; /* 8px 10px에서 10px 12px로 확대 */
+  border-radius: 12px; /* 8px에서 12px로 더 둥글게 */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  font-size: 15px; /* 14px에서 15px로 확대 */
+}
+
+.ai-control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 메시지 컨테이너 */
+.ai-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px; /* 20px에서 24px로 확대 */
+  background: linear-gradient(145deg, #f8fafc, #ffffff);
+  position: relative;
+}
+
+.ai-messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-messages-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.ai-messages-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #cbd5e0, #a0aec0);
+  border-radius: 3px;
+}
+
+.ai-messages-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #a0aec0, #718096);
+}
+
+/* 메시지 스타일 */
+.ai-message {
+  display: flex;
+  margin-bottom: 16px;
+  animation: messageSlideIn 0.4s ease-out;
+  gap: 10px;
+}
+
+.ai-message.user {
+  flex-direction: row-reverse;
+}
+
+.ai-message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ai-message.user .ai-message-avatar {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+}
+
+.ai-message.ai .ai-message-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.ai-message-content {
+  max-width: 75%;
+  position: relative;
+}
+
+.ai-message-text {
+  padding: 16px 20px; /* 12px 16px에서 16px 20px로 확대 */
+  border-radius: 20px; /* 16px에서 20px로 더 둥글게 */
+  font-size: 15px; /* 14px에서 15px로 확대 */
+  line-height: 1.5; /* 1.4에서 1.5로 확대 */
+  position: relative;
+  word-wrap: break-word;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04); /* 더 고급스러운 그림자 */
+}
+
+.ai-message.user .ai-message-text {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.ai-message.ai .ai-message-text {
+  background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+  color: #2d3748;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom-left-radius: 4px;
+}
+
+.ai-message.welcome .ai-message-text {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(72, 187, 120, 0.3);
+}
+
+.ai-message.error .ai-message-text {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(245, 101, 101, 0.3);
+}
+
+/* 타이핑 텍스트 애니메이션 */
+.typing-text {
+  display: inline-block;
+  animation: fadeInText 0.3s ease-in;
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 타이핑 커서 */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background: currentColor;
+  margin-left: 2px;
+  animation: typingBlink 1.2s infinite;
+  vertical-align: text-bottom;
+}
+
+/* 타이핑 인디케이터 */
+.ai-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  font-size: 13px;
+  color: #718096;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ai-typing-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.ai-typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  animation: typingDots 1.4s infinite ease-in-out;
+}
+
+.ai-typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* 메시지 시간 */
+.ai-message-time {
+  font-size: 10px;
+  color: #a0aec0;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.ai-message.user .ai-message-time {
+  text-align: left;
+}
+
+/* 소스 참조 */
+.ai-source-references {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #4a5568;
+  border-left: 3px solid #667eea;
+}
+
+/* 제안 */
+.ai-suggestions {
+  margin: 12px 0;
+  padding: 0 20px;
+}
+
+.ai-suggestions-title {
+  font-size: 13px;
+  color: #4a5568;
+  margin-bottom: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-suggestion-item {
+  background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px; /* 10px에서 16px로 더 둥글게 */
+  padding: 14px 16px; /* 10px 12px에서 14px 16px로 확대 */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px; /* 13px에서 14px로 확대 */
+  color: #4a5568;
+}
+
+.ai-suggestion-item:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateX(-2px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+/* 입력 영역 */
+.ai-input-container {
+  padding: 24px; /* 20px에서 24px로 확대 */
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-top: 1px solid #e2e8f0;
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 0 0 28px 28px; /* 하단 모서리 둥글게 */
+}
+
+.ai-input-wrapper {
+  display: flex;
+  gap: 10px; /* 8px에서 10px로 확대 */
+  align-items: flex-end;
+  background: white;
+  border-radius: 18px; /* 12px에서 18px로 더 둥글게 */
+  padding: 6px; /* 4px에서 6px로 확대 */
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+}
+
+.ai-input-field {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 16px; /* 10px 12px에서 14px 16px로 확대 */
+  font-size: 15px; /* 14px에서 15px로 확대 */
+  background: transparent;
+  resize: none;
+  max-height: 120px; /* 100px에서 120px로 확대 */
+  min-height: 24px; /* 20px에서 24px로 확대 */
+  line-height: 1.5; /* 1.4에서 1.5로 확대 */
+  color: #2d3748;
+  border-radius: 12px; /* 둥근 모서리 추가 */
+}
+
+.ai-input-field::placeholder {
+  color: #a0aec0;
+}
+
+.ai-send-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 14px; /* 10px에서 14px로 더 둥글게 */
+  padding: 14px 16px; /* 10px 12px에서 14px 16px로 확대 */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px; /* 14px에서 16px로 확대 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px; /* 40px에서 48px로 확대 */
+  box-shadow:
+    0 4px 12px rgba(102, 126, 234, 0.3),
+    0 2px 4px rgba(102, 126, 234, 0.2); /* 더 고급스러운 그림자 */
+}
+
+.ai-send-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
+}
+
+.ai-send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 채팅 초기화 버튼 */
+.ai-clear-button {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ai-clear-button:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4);
+}
+
+.ai-clear-button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .ai-sidebar {
+    width: calc(100vw - 20px); /* 좀 더 여백을 줘서 깔끔하게 */
+    max-width: 450px; /* 최대 크기 제한 */
+    height: 600px; /* 모바일에서도 충분히 크게 */
+  }
+
+  .ai-sidebar-toggle {
+    right: 15px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .ai-message-content {
+    max-width: 85%;
+  }
+
+  .ai-messages-container {
+    padding: 16px;
+  }
+
+  .ai-input-container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-sidebar-header {
+    padding: 16px;
+  }
+
+  .ai-sidebar-title {
+    font-size: 15px;
+  }
+
+  .ai-message-text {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+/* AI 답변 포맷팅 스타일 */
+.ai-formatted-content {
+  line-height: 1.5;
+  color: #374151;
+}
+
+.ai-formatted-content p.ai-paragraph {
+  margin: 0 0 8px 0;
+  text-align: left;
+}
+
+.ai-formatted-content p.ai-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.ai-formatted-content strong {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.ai-formatted-content .ai-list-item {
+  margin: 6px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ai-formatted-content .ai-list-item.numbered .ai-list-number {
+  color: #3b82f6;
+  font-weight: 600;
+  min-width: 18px;
+}
+
+.ai-formatted-content .ai-list-item.bulleted .ai-list-bullet {
+  color: #6366f1;
+  font-weight: bold;
+  min-width: 12px;
+  text-align: center;
+}
+
+.ai-formatted-content .ai-list-item > span:last-child {
+  flex: 1;
+}
+
+/* 타이핑 애니메이션 스타일 개선 */
+.typing-text {
+  position: relative;
+}
+
+.typing-text .ai-formatted-content {
+  display: inline;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background: #3b82f6;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .ai-sidebar-container {
+    right: 15px; /* 10px에서 15px로 */
+  }
+
+  .ai-sidebar {
+    width: calc(100vw - 40px);
+    max-width: 420px; /* 350px에서 420px로 확대 */
+    height: 550px; /* 450px에서 550px로 확대 */
+  }
+
+  .ai-message-content {
+    max-width: 85%;
+  }
+
+  .ai-messages-container {
+    padding: 16px;
+  }
+
+  .ai-input-container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-sidebar-header {
+    padding: 16px;
+  }
+
+  .ai-sidebar-title {
+    font-size: 15px;
+  }
+
+  .ai-message-text {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .ai-sidebar {
+    width: calc(100vw - 30px); /* 20px에서 30px로 */
+    height: 500px; /* 400px에서 500px로 확대 */
+    max-width: 380px; /* 최대 크기 제한 추가 */
+  }
+}

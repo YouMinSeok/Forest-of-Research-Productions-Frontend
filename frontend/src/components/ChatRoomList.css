@@ -1,0 +1,640 @@
+/* ChatRoomList.css - 네이버 카페 스타일 채팅방 목록 */
+
+.chat-room-list-overlay {
+  position: fixed;
+  top: 50px;
+  /* left: 0; */
+  right: 50px;
+  /* bottom: 0; */
+  /* background: rgba(0, 0, 0, 0.5); */
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  z-index: 998;
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.chat-room-list {
+  background: white;
+  border-radius: 12px;
+  width: 380px;
+  max-width: 90vw;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 헤더 */
+.chat-room-list-header {
+  background: linear-gradient(135deg, #00c73c 0%, #00b235 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px 12px 0 0;
+}
+
+.chat-room-list-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.create-group-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.create-group-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 콘텐츠 영역 */
+.chat-room-list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  max-height: 400px;
+}
+
+/* 로딩 상태 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.loading-state i {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: #00c73c;
+}
+
+.loading-state span {
+  font-size: 14px;
+}
+
+/* 에러 상태 */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.error-state i {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.error-state span {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.retry-btn {
+  background: #00c73c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-btn:hover {
+  background: #00b235;
+}
+
+/* 빈 상태 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #666;
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+
+.empty-state span {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 채팅방 목록 */
+.room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  background: #f8f9fa;
+  border: 1px solid transparent;
+}
+
+.room-item:hover {
+  background: #e9ecef;
+  border-color: #00c73c;
+  transform: translateX(2px);
+}
+
+.room-item:active {
+  transform: translateX(0);
+}
+
+/* 아바타 */
+.room-avatar {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.room-avatar i {
+  font-size: 44px;
+  color: #6c757d;
+}
+
+/* 채팅방 정보 */
+.room-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.room-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.room-time {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.room-last-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.message-text {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-message {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+}
+
+/* 읽지 않은 메시지 배지 */
+.unread-badge {
+  background: #e74c3c;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 그룹 채팅 아바타 */
+.room-avatar .fa-users {
+  color: #10b981;
+}
+
+/* 그룹 멤버 수 표시 */
+.group-indicator {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: normal;
+  margin-left: 4px;
+}
+
+/* 방 이름 컨테이너 */
+.room-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 그룹 채팅방 아이템 하이라이트 */
+.room-item.group-chat {
+  border-left: 3px solid #10b981;
+}
+
+/* 그룹 채팅방 호버 효과 */
+.room-item:hover .fa-users {
+  color: #047857;
+}
+
+/* 그룹 채팅방 마지막 메시지 스타일 */
+.room-item.group-chat .message-text {
+  color: #059669;
+}
+
+/* 모바일에서 그룹 표시 최적화 */
+@media (max-width: 768px) {
+  .group-indicator {
+    font-size: 11px;
+  }
+
+  .room-name {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .group-indicator {
+    font-size: 10px;
+  }
+}
+
+/* 푸터 */
+.chat-room-list-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+}
+
+.refresh-btn {
+  width: 100%;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.refresh-btn:active {
+  transform: translateY(0);
+}
+
+/* 스크롤바 스타일 */
+.chat-room-list-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-room-list-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.chat-room-list-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.chat-room-list-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .chat-room-list {
+    width: 350px;
+    max-height: 70vh;
+  }
+
+  .chat-room-list-header {
+    padding: 14px 16px;
+  }
+
+  .chat-room-list-header h3 {
+    font-size: 1rem;
+  }
+
+  .create-group-btn,
+  .close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .chat-room-list-content {
+    padding: 12px;
+    max-height: 350px;
+  }
+
+  .room-item {
+    padding: 10px 12px;
+  }
+
+  .room-avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+
+  .room-avatar i {
+    font-size: 40px;
+  }
+
+  .room-name {
+    font-size: 13px;
+    max-width: 150px;
+  }
+
+  .message-text {
+    font-size: 11px;
+  }
+
+  .room-time {
+    font-size: 10px;
+  }
+
+  .unread-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    min-width: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-room-list {
+    width: calc(100vw - 20px);
+    max-height: 60vh;
+  }
+
+  .chat-room-list-header {
+    padding: 12px 14px;
+  }
+
+  .chat-room-list-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .chat-room-list-content {
+    padding: 10px;
+    max-height: 300px;
+  }
+
+  .room-item {
+    padding: 8px 10px;
+  }
+
+  .room-avatar {
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+  }
+
+  .room-avatar i {
+    font-size: 36px;
+  }
+
+  .room-name {
+    font-size: 12px;
+    max-width: 120px;
+  }
+
+  .message-text {
+    font-size: 10px;
+  }
+
+  .room-time {
+    font-size: 9px;
+  }
+
+  .empty-state {
+    padding: 30px 15px;
+  }
+
+  .empty-state i {
+    font-size: 28px;
+  }
+
+  .empty-state span {
+    font-size: 14px;
+  }
+
+  .empty-state p {
+    font-size: 12px;
+  }
+}
+
+/* 애니메이션 효과 */
+.room-item {
+  animation: roomItemSlideIn 0.3s ease-out;
+}
+
+@keyframes roomItemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 포커스 스타일 */
+.room-item:focus {
+  outline: 2px solid #00c73c;
+  outline-offset: 2px;
+}
+
+.create-group-btn:focus,
+.close-btn:focus,
+.refresh-btn:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* 다크 모드 지원 (선택사항) */
+@media (prefers-color-scheme: dark) {
+  .chat-room-list {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+
+  .chat-room-list-header {
+    background: linear-gradient(135deg, #00a32e 0%, #008a26 100%);
+  }
+
+  .room-item {
+    background: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .room-item:hover {
+    background: #5a6478;
+    border-color: #00c73c;
+  }
+
+  .room-name {
+    color: #e2e8f0;
+  }
+
+  .message-text {
+    color: #a0aec0;
+  }
+
+  .no-message {
+    color: #718096;
+  }
+
+  .room-time {
+    color: #718096;
+  }
+
+  .chat-room-list-footer {
+    background: #4a5568;
+    border-top-color: #5a6478;
+  }
+
+  .refresh-btn {
+    background: #4a5568;
+    border: 1px solid #5a6478;
+  }
+
+  .refresh-btn:hover {
+    background: #5a6478;
+  }
+
+  .empty-state,
+  .loading-state {
+    color: #a0aec0;
+  }
+
+  .empty-state i,
+  .loading-state i {
+    color: #718096;
+  }
+}

@@ -1,0 +1,346 @@
+/* 상단 네비게이션 스타일 - 참고 사이트 스타일 적용 */
+.topnav {
+  width: 100%;
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-menu);
+}
+
+/* 상단 로고 영역 */
+.topnav-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1.5rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.center-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.logo-text {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb 0%, #16a34a 50%, #dc2626 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  text-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.site-logo:hover .logo-text {
+  transform: scale(1.05);
+}
+
+/* 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+  .logo-text {
+    background: linear-gradient(135deg, #60a5fa 0%, #34d399 50%, #f87171 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* 모바일 메뉴 토글 버튼 - PC에서 숨김 */
+.mobile-menu-toggle {
+  display: none; /* PC에서는 기본적으로 숨김 */
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--primary-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast);
+}
+
+.mobile-menu-toggle:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* 하단 메뉴 영역 */
+.topnav-lower {
+  background-color: var(--bg-primary);
+  transition: all var(--transition-fast);
+}
+
+.lower-center {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 메뉴 목록 스타일 */
+.topnav-menu ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.topnav-menu li {
+  display: block;
+  position: relative;
+}
+
+.topnav-menu li a {
+  display: block;
+  padding: 0.9rem 1.2rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  border-bottom: 2px solid transparent;
+}
+
+.topnav-menu li a:hover {
+  color: var(--secondary-color);
+}
+
+.topnav-menu li a.active {
+  border-bottom: 2px solid var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+/* 인증 관련 스타일 - 개선된 스타일 */
+.auth-nav-item {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* 새로운 인증 링크 스타일 */
+.auth-links {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
+}
+
+.auth-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.auth-link:hover {
+  color: var(--secondary-color);
+}
+
+.auth-divider {
+  margin: 0 0.8rem;
+  color: var(--border-medium);
+  font-size: 0.9rem;
+}
+
+/* 사용자 메뉴 */
+.user-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 100%;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  height: 100%;
+}
+
+.user-btn:hover {
+  color: var(--secondary-color);
+}
+
+.user-icon {
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  min-width: 200px;
+  z-index: 10;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+  border: 1px solid var(--border-light);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-secondary);
+  color: var(--secondary-color);
+}
+
+.logout-item {
+  color: var(--error-color);
+  border-top: 1px solid var(--border-light);
+}
+
+.logout-icon {
+  font-size: 0.9rem;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .topnav-top {
+    padding: 0.6rem 1rem;
+  }
+
+  .mobile-menu-toggle {
+    display: flex; /* 모바일에서만 토글 버튼 표시 */
+  }
+
+  .topnav-lower {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    will-change: max-height; /* 성능 최적화 */
+  }
+
+  .topnav-lower.mobile-open {
+    max-height: 90vh; /* 더 크게 설정하고 스크롤 가능하게 */
+    overflow-y: auto;
+  }
+
+  .topnav-menu ul {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .topnav-menu li a {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+  }
+
+  .topnav-menu li a.active {
+    border-bottom: 1px solid var(--border-light);
+    border-left: 3px solid var(--secondary-color);
+    padding-left: calc(1rem - 3px);
+    background-color: var(--bg-secondary);
+  }
+
+  .auth-nav-item {
+    order: -1;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  /* 모바일에서의 인증 링크 스타일 */
+  .auth-links {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+    justify-content: center;
+  }
+
+  .auth-link {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .auth-divider {
+    margin: 0 1rem;
+  }
+
+  .user-menu-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .user-btn {
+    width: 100%;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-light);
+    padding: 1rem;
+  }
+
+  .user-dropdown {
+    position: static;
+    box-shadow: none;
+    animation: none;
+    border: none;
+    border-radius: 0;
+  }
+
+  .dropdown-item {
+    padding-left: 2rem;
+    background-color: var(--bg-secondary);
+  }
+}
