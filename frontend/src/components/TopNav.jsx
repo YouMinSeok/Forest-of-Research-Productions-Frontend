@@ -11,15 +11,37 @@ import {
 import './TopNav.css';
 
 
-// 환경변수 기반 API URL 설정
-const hostIp = process.env.REACT_APP_HOST_IP;
-const port = process.env.REACT_APP_API_PORT || '8080';
+// 환경변수 기반 API URL 설정 (api.js와 동일한 방식)
+const getApiBaseUrl = () => {
+  // 우선순위: REACT_APP_BACKEND_URL > REACT_APP_API_BASE_URL > 호스트+포트 조합
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-if (!hostIp) {
-  throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
-}
+  if (backendUrl) {
+    return backendUrl;
+  }
 
-const backendUrl = `http://${hostIp}:${port}`;
+  if (apiBaseUrl) {
+    return apiBaseUrl;
+  }
+
+  // 로컬 개발용 호스트+포트 조합 (fallback)
+  const hostIp = process.env.REACT_APP_HOST_IP;
+  const port = process.env.REACT_APP_API_PORT || '8080';
+
+  if (!hostIp) {
+    // 기본값으로 localhost 사용
+    console.warn('환경변수가 설정되지 않았습니다. 기본값 localhost:8000을 사용합니다.');
+    return 'http://localhost:8000';
+  }
+
+  const protocol = port === '443' || port === '80' ? 'https' : 'http';
+  const portSuffix = (port === '443' || port === '80') ? '' : `:${port}`;
+
+  return `${protocol}://${hostIp}${portSuffix}`;
+};
+
+const backendUrl = getApiBaseUrl();
 
 function TopNav({ onSidebarTypeChange }) {
   const navigate = useNavigate();
