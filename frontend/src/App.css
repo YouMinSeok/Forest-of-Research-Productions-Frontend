@@ -1,0 +1,195 @@
+/* 전역 CSS 변수 */
+:root {
+  --forest-green: #4caf50;
+  --forest-dark-green: #1a5e29;
+  --forest-light-green: #a5d6a7;
+  --forest-brown: #795548;
+  --forest-light-brown: #bcaaa4;
+  --forest-bg: #f5f9f5;
+  --forest-accent: #8bc34a;
+}
+
+/* 폰트 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+/* 전역 스타일 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 링크 스타일 */
+a {
+  color: var(--forest-dark-green);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--forest-accent);
+}
+
+/* 버튼 스타일 */
+.btn {
+  background-color: var(--forest-dark-green);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background-color: var(--forest-green);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--forest-dark-green);
+  border: 1px solid var(--forest-dark-green);
+}
+
+.btn-outline:hover {
+  background-color: var(--forest-dark-green);
+  color: white;
+}
+
+.btn-sm {
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.btn-lg {
+  font-size: 1.1rem;
+  padding: 0.7rem 1.5rem;
+}
+
+/* 폼 요소 */
+input, textarea, select {
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.8rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--forest-dark-green);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(26, 94, 41, 0.2);
+}
+
+/* 헤더 및 제목 스타일 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+/* 레이아웃 컨테이너 */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 콘텐츠 섹션 공통 스타일 */
+.content-box {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* 로딩 및 에러 상태 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.error {
+  color: #e74c3c;
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: #feeeed;
+  border-radius: 5px;
+}
+
+.no-content {
+  padding: 2rem;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--forest-light-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--forest-dark-green);
+}
