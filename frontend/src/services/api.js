@@ -397,7 +397,7 @@ export const updateComment = async (postId, commentId, commentData) => {
 export const getCurrentUser = async () => {
   try {
     const response = await api.get('/api/auth/me');
-    return response.data; // 예: { user: { _id, name, email, ... } }
+    return response.data.user || response.data; // user 객체 직접 반환
   } catch (error) {
     console.error("사용자 정보 가져오기 실패:", error.response?.data || error.message);
     throw error;
@@ -452,6 +452,27 @@ export const fetchRecentSignups = async (limit = 10) => {
     return response.data;
   } catch (error) {
     console.error("최근 가입 활동 가져오기 실패:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// 로그아웃
+export const logoutUser = async () => {
+  try {
+    await api.post('/api/auth/logout');
+    // 클라이언트에서 토큰 제거
+    sessionStorage.removeItem('access_token');
+    localStorage.removeItem('access_token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
+  } catch (error) {
+    // 서버 로그아웃 실패해도 클라이언트 토큰은 제거
+    sessionStorage.removeItem('access_token');
+    localStorage.removeItem('access_token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
+
+    console.error("로그아웃 실패:", error.response?.data || error.message);
     throw error;
   }
 };
