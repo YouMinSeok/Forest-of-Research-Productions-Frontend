@@ -116,25 +116,18 @@ function ChatModal({ targetUser, roomId, onClose, onMinimize, isMinimized }) {
 
   const initializeWebSocket = () => {
     const hostIp = process.env.REACT_APP_HOST_IP;
-    const port = process.env.REACT_APP_API_PORT || '8080';
 
     if (!hostIp) {
       throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
     }
 
-    const backendUrl = `http://${hostIp}:${port}`;
-    console.log('🌐 Backend URL:', backendUrl);
+    // HTTPS 환경에서는 WSS 사용, HTTP 환경에서는 WS 사용
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const backendUrl = `https://${hostIp}`;
+    const wsUrl = `${protocol}://${hostIp}`;
 
-    // HTTP/HTTPS를 WS/WSS로 변환
-    let wsUrl;
-    if (backendUrl.startsWith('https://')) {
-      wsUrl = backendUrl.replace('https://', 'wss://');
-    } else if (backendUrl.startsWith('http://')) {
-      wsUrl = backendUrl.replace('http://', 'ws://');
-    } else {
-      // 프로토콜이 없는 경우 기본값 설정
-      wsUrl = window.location.protocol === 'https:' ? `wss://${backendUrl}` : `ws://${backendUrl}`;
-    }
+    console.log('🌐 Backend URL:', backendUrl);
+    console.log('🌐 WebSocket URL:', wsUrl);
 
     const token = localStorage.getItem('access_token');
     const fullWsUrl = `${wsUrl}/ws/chat/${roomId}?token=${token}`;
