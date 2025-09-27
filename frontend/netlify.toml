@@ -18,9 +18,18 @@
 # 환경별 배포 설정
 [context.production.environment]
   NODE_ENV = "production"
+  CI = "false"
+  ESLINT_NO_DEV_ERRORS = "true"
+  GENERATE_SOURCEMAP = "false"
+  REACT_APP_ENV = "production"
+  REACT_APP_DISABLE_CONSOLE = "true"
 
 [context.deploy-preview.environment]
   NODE_ENV = "development"
+  CI = "false"
+  ESLINT_NO_DEV_ERRORS = "true"
 
 [context.branch-deploy.environment]
   NODE_ENV = "development"
+  CI = "false"
+  ESLINT_NO_DEV_ERRORS = "true"

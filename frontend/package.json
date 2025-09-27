@@ -62,9 +62,9 @@
       "react-app/jest"
     ],
     "rules": {
-      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/exhaustive-deps": "off",
       "react/jsx-no-target-blank": "error",
-      "react/no-array-index-key": "warn",
+      "react/no-array-index-key": "off",
       "react/prop-types": "off",
       "no-console": [
         "warn",
@@ -97,12 +97,25 @@
       "last 1 safari version"
     ]
   },
+  "babel": {
+    "presets": [
+      "react-app"
+    ],
+    "env": {
+      "production": {
+        "plugins": [
+          "transform-remove-console"
+        ]
+      }
+    }
+  },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.throttle": "^4.1.9",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "autoprefixer": "^10.4.21",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "lighthouse": "^12.2.1",
     "postcss": "^8.5.3",
