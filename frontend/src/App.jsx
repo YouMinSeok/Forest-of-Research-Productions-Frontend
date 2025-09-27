@@ -1,16 +1,16 @@
 // src/App.jsx
 import React, { useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import './components/Skeleton.css'; // 스켈레톤 CSS 임포트 추가
 import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
-import { isTokenExpired, removeExpiredToken } from './services/auth';
+import { isTokenExpired, removeExpiredToken, scheduleAutoRefresh, getAccessToken } from './services/auth';
 import { usePerformanceMonitor } from './utils/performance';
+import { AuthProvider } from './contexts/AuthContext';
 
 // 코드 스플리팅으로 번들 크기 최적화
 const MainHome = lazy(() => import('./pages/MainHome'));
-const CafePage = lazy(() => import('./pages/CafePage'));
 const OurStoryPage = lazy(() => import('./pages/OurStoryPage'));
 const ResearchResultPage = lazy(() => import('./pages/ResearchResultPage'));
 const MyMenu = lazy(() => import('./pages/MyMenu'));
@@ -76,20 +76,51 @@ function App() {
   // 성능 모니터링
   const { measureRenderTime } = usePerformanceMonitor('App');
 
-  // 앱 시작 시 만료된 토큰 자동 제거
+  // 앱 시작 시 만료된 토큰 자동 제거 + 자동 리프레시 예약 및 인증 상태 점검
   useEffect(() => {
-    const checkAndRemoveExpiredToken = () => {
-      const accessToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
-      if (accessToken && isTokenExpired(accessToken)) {
-        console.log('만료된 토큰을 발견했습니다. 자동으로 제거합니다.');
+    const initializeAuth = () => {
+      console.log('🚀 앱 초기화: 인증 상태 점검 시작');
+
+      // 현재 저장된 토큰들 확인
+      const sessionToken = sessionStorage.getItem('access_token');
+      const localToken = localStorage.getItem('access_token');
+      const storedUser = sessionStorage.getItem('user') || localStorage.getItem('user');
+
+      console.log('🔍 저장된 인증 정보:', {
+        sessionToken: sessionToken ? '있음' : '없음',
+        localToken: localToken ? '있음' : '없음',
+        storedUser: storedUser ? '있음' : '없음'
+      });
+
+      // 토큰이 있는 경우 유효성 검사
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        if (isTokenExpired(accessToken)) {
+          console.log('⚠️ 만료된 토큰 발견 - 자동 정리');
+          removeExpiredToken();
+        } else {
+          console.log('✅ 유효한 토큰 - 자동 리프레시 예약');
+          scheduleAutoRefresh();
+        }
+      } else {
+        console.log('ℹ️ 토큰 없음 - 게스트 상태');
+        // 혹시 남은 찌꺼기 정리
         removeExpiredToken();
       }
     };
 
-    checkAndRemoveExpiredToken();
+    // 1) 즉시 한 번 초기화
+    initializeAuth();
 
-    // 5분마다 토큰 상태 확인
-    const interval = setInterval(checkAndRemoveExpiredToken, 5 * 60 * 1000);
+    // 2) 5분마다 토큰 상태 확인 (유효성 보조 체크)
+    const interval = setInterval(() => {
+      const accessToken = getAccessToken();
+      if (accessToken && isTokenExpired(accessToken)) {
+        console.log('🔄 주기적 체크: 만료된 토큰 정리');
+        removeExpiredToken();
+      }
+    }, 5 * 60 * 1000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -116,7 +147,8 @@ function App() {
 
   return measureRenderTime(() => (
     <ErrorBoundary>
-      <Router>
+      <AuthProvider>
+        <Router>
         <div className="App">
           <ErrorBoundary>
             <Suspense fallback={<LoadingSpinner />}>
@@ -129,218 +161,291 @@ function App() {
                 <Route path="/find-password" element={<FindPassword />} />
 
                 {/* Layout으로 감싸진 일반 페이지들 */}
-                <Route path="/" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <MainHome />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <MainHome />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/cafe" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <CafePage />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                {/* 연구카페 리다이렉트 */}
+                <Route
+                  path="/cafe"
+                  element={<Navigate to="/research/연구자료" replace />}
+                />
 
-                <Route path="/our-story" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <OurStoryPage />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
 
-                <Route path="/research-result" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <ResearchResultPage />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
 
-                <Route path="/mymenu" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <MyMenu />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/our-story"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <OurStoryPage />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
+
+                <Route
+                  path="/research-result"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <ResearchResultPage />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
+
+                <Route
+                  path="/mymenu"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <MyMenu />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 마이메뉴 개별 라우트들 */}
-                <Route path="/mymenu/profile" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <MyMenuProfile />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/mymenu/profile"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <MyMenuProfile />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/mymenu/posts" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <MyMenuPosts />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/mymenu/posts"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <MyMenuPosts />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/mymenu/comments" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <MyMenuComments />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/mymenu/comments"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <MyMenuComments />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* === 새로운 통합 게시판 구조 (네이버 카페식) === */}
 
                 {/* 커뮤니티 게시판들 */}
-                <Route path="/community/:boardType" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <UniversalBoard />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/community/:boardType"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <UniversalBoard />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 연구 게시판들 */}
-                <Route path="/research/:boardType" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <UniversalBoard />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/research/:boardType"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <UniversalBoard />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 일반 게시판들 */}
-                <Route path="/board/:boardType" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <UniversalBoard />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/board/:boardType"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <UniversalBoard />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 게시글 상세보기 - 모든 게시판 공통 */}
-                <Route path="/community/:boardType/detail/:postId" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <BoardDetail />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
-                <Route path="/research/:boardType/detail/:postId" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <BoardDetail />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
-                <Route path="/board/:boardType/detail/:postId" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <BoardDetail />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/community/:boardType/detail/:postId"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <BoardDetail />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/research/:boardType/detail/:postId"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <BoardDetail />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/board/:boardType/detail/:postId"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <BoardDetail />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 게시글 수정 - 모든 게시판 공통 */}
-                <Route path="/community/:boardType/edit/:postId" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <BoardEdit />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
-                <Route path="/research/:boardType/edit/:postId" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <BoardEdit />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
-                <Route path="/board/:boardType/edit/:postId" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <BoardEdit />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/community/:boardType/edit/:postId"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <BoardEdit />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/research/:boardType/edit/:postId"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <BoardEdit />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/board/:boardType/edit/:postId"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <BoardEdit />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 게시글 작성 페이지 */}
-                <Route path="/write-post" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <WritePostPage />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/write-post"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <WritePostPage />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 기타 페이지들 */}
-                <Route path="/memo-board" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <MemoBoardFigmaLike />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/memo-board"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <MemoBoardFigmaLike />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/academic-schedule" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <AcademicSchedule />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/academic-schedule"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <AcademicSchedule />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 관리자 페이지들 */}
-                <Route path="/admin" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <AdminDashboard />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/admin"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <AdminDashboard />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/admin/users" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <UserManagement />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/admin/users"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <UserManagement />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/admin/permissions" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <PermissionManagement />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/admin/permissions"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <PermissionManagement />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
-                <Route path="/admin/system" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <SystemStatus />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="/admin/system"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <SystemStatus />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
 
                 {/* 404 페이지 */}
-                <Route path="*" element={
-                  <ErrorBoundary>
-                    <Layout>
-                      <NotFound />
-                    </Layout>
-                  </ErrorBoundary>
-                } />
+                <Route
+                  path="*"
+                  element={
+                    <ErrorBoundary>
+                      <Layout>
+                        <NotFound />
+                      </Layout>
+                    </ErrorBoundary>
+                  }
+                />
               </Routes>
             </Suspense>
           </ErrorBoundary>
         </div>
       </Router>
+      </AuthProvider>
     </ErrorBoundary>
   ));
 }

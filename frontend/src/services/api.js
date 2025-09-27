@@ -1,501 +1,509 @@
-// services/api
+// src/services/api.js
 import axios from 'axios';
-import { getCookie, isTokenExpired, removeExpiredToken } from './auth';
 
-// 환경변수 기반 API URL 설정
+// ✅ 전역 기본값을 확실히 끈다 (쿠키 미사용)
+axios.defaults.withCredentials = false;
+
+// ===========================
+// 내부 스토리지 유틸
+// ===========================
+const getAccessToken = () =>
+  sessionStorage.getItem('access_token') || localStorage.getItem('access_token') || null;
+
+const getRefreshToken = () =>
+  sessionStorage.getItem('refresh_token') || localStorage.getItem('refresh_token') || null;
+
+const saveTokens = (accessToken, refreshToken) => {
+  try {
+    if (accessToken) {
+      sessionStorage.setItem('access_token', accessToken);
+      localStorage.setItem('access_token', accessToken);
+    }
+    if (refreshToken) {
+      sessionStorage.setItem('refresh_token', refreshToken);
+      localStorage.setItem('refresh_token', refreshToken);
+    }
+  } catch (e) {
+    console.warn('토큰 저장 중 오류:', e);
+  }
+};
+
+export const removeExpiredToken = () => {
+  try {
+    sessionStorage.removeItem('access_token');
+    localStorage.removeItem('access_token');
+    sessionStorage.removeItem('refresh_token');
+    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
+    // 쿠키 인증은 쓰지 않지만 혹시 남아있다면 제거
+    document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  } catch (e) {
+    console.warn('토큰 제거 중 오류:', e);
+  }
+};
+
+// ===========================
+// 안전한 base64url 디코딩 & JWT 도우미
+// ===========================
+const base64UrlDecode = (str) => {
+  try {
+    const pad = (s) => s + '='.repeat((4 - (s.length % 4)) % 4);
+    const b64 = pad(str.replace(/-/g, '+').replace(/_/g, '/'));
+    const binary = atob(b64);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  } catch {
+    return null;
+  }
+};
+
+const decodeJWT = (token) => {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const payloadJson = base64UrlDecode(parts[1]);
+  if (!payloadJson) return null;
+  try {
+    return JSON.parse(payloadJson);
+  } catch {
+    return null;
+  }
+};
+
+export const isTokenExpired = (token, clockSkewSec = 120) => {
+  const payload = decodeJWT(token);
+  if (!payload || !payload.exp) return true;
+  const nowMs = Date.now();
+  const expMs = payload.exp * 1000;
+  return nowMs >= (expMs - clockSkewSec * 1000); // 120초 시계 오차 허용
+};
+
+// 디버깅용: 토큰 상태 확인
+export const debugTokenStatus = () => {
+  const accessToken = getAccessToken();
+  const refreshToken = getRefreshToken();
+
+  console.log('=== 토큰 상태 디버깅 ===');
+  console.log('Access Token:', accessToken ? '있음' : '없음');
+  console.log('Refresh Token:', refreshToken ? '있음' : '없음');
+
+  if (accessToken) {
+    const payload = decodeJWT(accessToken);
+    if (payload) {
+      const now = Math.floor(Date.now() / 1000);
+      const exp = payload.exp;
+      const timeLeft = exp - now;
+      console.log('Access Token 만료까지:', timeLeft > 0 ? `${timeLeft}초 남음` : `${Math.abs(timeLeft)}초 전 만료`);
+      console.log('Access Token 만료 시간:', new Date(exp * 1000).toLocaleString());
+      console.log('현재 시간:', new Date().toLocaleString());
+      console.log('토큰 만료 여부:', isTokenExpired(accessToken));
+    } else {
+      console.log('Access Token 디코딩 실패');
+    }
+  }
+
+  if (refreshToken) {
+    const payload = decodeJWT(refreshToken);
+    if (payload) {
+      const now = Math.floor(Date.now() / 1000);
+      const exp = payload.exp;
+      const timeLeft = exp - now;
+      console.log('Refresh Token 만료까지:', timeLeft > 0 ? `${timeLeft}초 남음` : `${Math.abs(timeLeft)}초 전 만료`);
+      console.log('Refresh Token 만료 시간:', new Date(exp * 1000).toLocaleString());
+      console.log('Refresh Token 만료 여부:', isTokenExpired(refreshToken));
+    } else {
+      console.log('Refresh Token 디코딩 실패');
+    }
+  }
+
+  return { accessToken, refreshToken };
+};
+
+// 강제 토큰 정리 및 로그인 페이지 이동
+export const forceLogout = (message = '로그인이 만료되었습니다. 다시 로그인해주세요.') => {
+  console.log('🚪 강제 로그아웃 실행');
+  removeExpiredToken();
+  alert(message);
+  window.location.href = '/login';
+};
+
+// ===========================
+// API 베이스 URL
+// ===========================
 const getApiBaseUrl = () => {
-  // 우선순위: REACT_APP_BACKEND_URL > REACT_APP_API_BASE_URL > 호스트+포트 조합
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-  if (backendUrl) {
-    return backendUrl;
-  }
+  if (backendUrl) return backendUrl;
+  if (apiBaseUrl) return apiBaseUrl;
 
-  if (apiBaseUrl) {
-    return apiBaseUrl;
-  }
-
-  // 로컬 개발용 호스트+포트 조합
   const hostIp = process.env.REACT_APP_HOST_IP;
   const port = process.env.REACT_APP_API_PORT || '8080';
-
   if (!hostIp) {
     throw new Error('백엔드 URL이 설정되지 않았습니다. REACT_APP_BACKEND_URL 또는 REACT_APP_HOST_IP를 설정해주세요.');
   }
-
   const protocol = port === '443' || port === '80' ? 'https' : 'http';
   const portSuffix = (port === '443' || port === '80') ? '' : `:${port}`;
-
   return `${protocol}://${hostIp}${portSuffix}`;
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
-console.log("API_BASE_URL:", API_BASE_URL); // 실제 값 확인
-console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log('API_BASE_URL:', API_BASE_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
+// ===========================
+// Axios 인스턴스
+// ===========================
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true,
+  withCredentials: false, // 쿠키 미사용(헤더 토큰만 사용)
   headers: { 'Content-Type': 'application/json' },
 });
 
+// ===========================
+// 토큰 자동 리프레시(중복 요청 억제)
+// - refresh_token 있으면 바디로 /api/auth/refresh
+// - 없으면 Authorization(구 access) 헤더로 /api/auth/refresh
+// ===========================
+let refreshPromise = null;
+
+const refreshAccessToken = async () => {
+  if (refreshPromise) return refreshPromise; // 이미 진행 중이면 그 Promise 재사용
+
+  const refresh_token = getRefreshToken();
+  const oldAccess = getAccessToken();
+
+  if (!refresh_token && !oldAccess) {
+    throw new Error('리프레시에 사용할 토큰이 없습니다.');
+  }
+
+  // 별도 axios로 호출 (인스턴스 인터셉터 영향 배제)
+  refreshPromise = (async () => {
+    try {
+      let res;
+      if (refresh_token) {
+        // 1) refresh_token 방식
+        res = await axios.post(
+          `${API_BASE_URL}/api/auth/refresh`,
+          { refresh_token },
+          {
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: false,
+          }
+        );
+      } else {
+        // 2) Authorization(구 access) 방식
+        res = await axios.post(
+          `${API_BASE_URL}/api/auth/refresh`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${oldAccess}` },
+            withCredentials: false,
+          }
+        );
+      }
+
+      const { access_token, refresh_token: newRefresh } = res.data || {};
+      if (!access_token) throw new Error('새 access_token이 응답에 없습니다.');
+      // 새 토큰 저장 (refresh_token이 오면 갱신)
+      saveTokens(access_token, newRefresh || refresh_token || null);
+      return access_token;
+    } catch (err) {
+      // 리프레시 실패 → 완전 로그아웃
+      removeExpiredToken();
+      throw err;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+};
+
+// ===========================
 // 요청 인터셉터
+// ===========================
 api.interceptors.request.use(
   (config) => {
-    // JWT 토큰 자동 첨부 (우선순위: sessionStorage > localStorage > cookie)
-    const sessionToken = sessionStorage.getItem('access_token');
-    const localToken = localStorage.getItem('access_token');
-    const cookieToken = getCookie('access_token');
-    const token = sessionToken || localToken || cookieToken;
+    // 요청 단위로도 withCredentials 확실히 차단
+    config.withCredentials = false;
 
+    // Authorization 헤더 첨부
+    const token = getAccessToken();
     console.log('🔍 토큰 확인:', {
-      sessionToken: sessionToken ? '있음' : '없음',
-      localToken: localToken ? '있음' : '없음',
-      cookieToken: cookieToken ? '있음' : '없음',
-      selectedToken: token ? '선택됨' : '없음'
+      sessionToken: sessionStorage.getItem('access_token') ? '있음' : '없음',
+      localToken: localStorage.getItem('access_token') ? '있음' : '없음',
+      cookieToken: '사용안함',
+      selectedToken: token ? '선택됨' : '없음',
+      tokenValue: token ? token.slice(0, 20) + '...' : 'null'
     });
 
     if (token) {
-      // 토큰 만료 확인
-      if (isTokenExpired(token)) {
-        console.log('토큰이 만료되었습니다. 로그아웃 처리합니다.');
-
-        // 게시판 조회 관련 API는 로그인 없이도 접근 가능하도록 허용
-        const publicReadOnlyAPIs = [
-          '/api/board/',           // 게시글 목록
-          '/api/activity/recent',  // 최근 활동들
-        ];
-
-        const requestUrl = config.url || '';
-        const isPublicReadAPI = publicReadOnlyAPIs.some(api => requestUrl.includes(api)) ||
-                               requestUrl.match(/^\/api\/board\/[^\/]+$/) ||           // GET /api/board/{id}
-                               requestUrl.match(/^\/api\/board\/[^\/]+\/view$/) ||     // POST /api/board/{id}/view
-                               requestUrl.match(/^\/api\/board\/[^\/]+\/comments$/);   // GET /api/board/{id}/comments
-
-        if (!isPublicReadAPI) {
-          removeExpiredToken();
-          // 토큰이 만료된 경우 로그인 페이지로 리다이렉트
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
-          return Promise.reject(new Error('토큰이 만료되었습니다.'));
-        } else {
-          console.log('📖 공개 읽기 API - 만료된 토큰 무시하고 계속 진행');
-          // 만료된 토큰은 제거하되 요청은 계속 진행
-          removeExpiredToken();
-        }
-      } else {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+      config.headers.Authorization = `Bearer ${token}`;
     } else {
       console.log('토큰이 없어서 Authorization 헤더를 추가하지 않습니다.');
     }
 
-    // FormData 처리
+    // FormData 처리 → 브라우저가 boundary 포함해서 자동 설정
     if (config.data instanceof FormData) {
-      console.log('🔧 FormData 감지: Content-Type 헤더 제거');
-      console.log('📋 FormData 내용:');
-      for (const pair of config.data.entries()) {
-        if (pair[1] instanceof File) {
-          console.log(`  ${pair[0]}:`, {
-            name: pair[1].name,
-            size: pair[1].size,
-            type: pair[1].type
-          });
-        } else {
-          console.log(`  ${pair[0]}:`, pair[1]);
-        }
-      }
-      // Content-Type 헤더 삭제하여 브라우저가 자동으로 설정하도록 함
       delete config.headers['Content-Type'];
     }
 
     return config;
   },
-  (error) => {
-    const url = error.config?.url || '';
-    const isDraftAPI = url.includes('/api/draft/');
-    const isAttachmentAPI = url.includes('/api/attachment/');
-
-    // 임시저장이나 첨부파일 API 오류는 경고 레벨로 처리
-    if (isDraftAPI || isAttachmentAPI) {
-      console.warn('⚠️ API 요청 실패:', {
-        url: url,
-        status: error.response?.status,
-        method: error.config?.method
-      });
-    } else {
-      // 기타 중요한 API 오류는 에러 레벨로 처리
-      console.error('🚨 응답 인터셉터 에러 감지:');
-      console.error('  - 상태 코드:', error.response?.status);
-      console.error('  - 응답 데이터:', error.response?.data);
-      console.error('  - 요청 URL:', error.config?.url);
-      console.error('  - 요청 방법:', error.config?.method);
-    }
-
-    if (error.response) {
-      const { status, data } = error.response;
-
-      // 401 Unauthorized
-      if (status === 401) {
-        console.log('🔐 인증 오류 감지 - 토큰 재확인');
-
-        // 게시판 조회 관련 API는 로그인 없이도 접근 가능하도록 허용
-        const publicReadOnlyAPIs = [
-          '/api/board/',           // 게시글 목록
-          '/api/activity/recent',  // 최근 활동들
-        ];
-
-        const requestUrl = error.config?.url || '';
-        const isPublicReadAPI = publicReadOnlyAPIs.some(api => requestUrl.includes(api)) ||
-                               requestUrl.match(/^\/api\/board\/[^\/]+$/) ||           // GET /api/board/{id}
-                               requestUrl.match(/^\/api\/board\/[^\/]+\/view$/) ||     // POST /api/board/{id}/view
-                               requestUrl.match(/^\/api\/board\/[^\/]+\/comments$/);   // GET /api/board/{id}/comments
-
-        if (!isPublicReadAPI) {
-          console.log('🚨 401 오류 - 현재 경로:', window.location.pathname);
-
-          // 로그인 페이지나 회원가입 관련 페이지에서는 리다이렉트하지 않음
-          const authPages = ['/login', '/signup', '/find-password', '/find-username', '/verify-signup'];
-          const isAuthPage = authPages.some(page => window.location.pathname.includes(page));
-
-          if (!isAuthPage) {
-            console.log('🔄 로그인 페이지로 리다이렉트');
-            // 토큰 제거 및 로그인 페이지로 리다이렉트
-            removeExpiredToken();
-            window.location.href = '/login';
-          } else {
-            console.log('🔐 인증 페이지에서 401 오류 - 리다이렉트하지 않음');
-          }
-        } else {
-          console.log('📖 공개 읽기 API - 로그인 리다이렉트 없이 계속 진행');
-        }
-
-        console.error('  - 에러 메시지:', data?.detail || data?.message);
-        console.error('  - 전체 응답:', JSON.stringify(data, null, 2));
-      }
-
-      // 403 Forbidden
-      if (status === 403) {
-        console.error('🚫 권한 오류:', data?.detail || '접근 권한이 없습니다.');
-      }
-
-      // 500 Internal Server Error - 임시저장/첨부파일이 아닌 경우만 에러 표시
-      if (status === 500 && !isDraftAPI && !isAttachmentAPI) {
-        console.error('💥 서버 오류:', data?.detail || '서버에서 오류가 발생했습니다.');
-      }
-    } else if (error.request) {
-      console.error('📡 네트워크 오류: 서버에 연결할 수 없습니다.');
-    } else {
-      console.error('⚙️ 요청 설정 오류:', error.message);
-    }
-
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터
+// 공개/상태 체크 API (여기서는 401이어도 리다이렉트/리프레시 트리거 X)
+const isPublicReadAPI = (url = '') => {
+  const list = ['/api/board/', '/api/activity/recent', '/api/banner/', '/api/auth/me', '/api/attachment/'];
+  return (
+    list.some((p) => url.includes(p)) ||
+    /^\/api\/board\/[^/]+$/.test(url) ||
+    /^\/api\/board\/[^/]+\/view$/.test(url) ||
+    /^\/api\/board\/[^/]+\/comments$/.test(url) ||
+    /^\/api\/attachment\/post\/[^/]+$/.test(url) ||
+    /^\/api\/attachment\/secure\/[^/]+$/.test(url)
+  );
+};
+
+// ===========================
+// 응답 인터셉터 (401 처리 핵심)
+// ===========================
 api.interceptors.response.use(
   (response) => {
-    // 성공 응답 로깅 (필요시)
     if (response.config.url?.includes('secure-upload')) {
       console.log('✅ 파일 업로드 성공 응답:', response.data);
     }
     return response;
   },
-  (error) => {
-    const url = error.config?.url || '';
-    const isDraftAPI = url.includes('/api/draft/');
-    const isAttachmentAPI = url.includes('/api/attachment/');
+  async (error) => {
+    const original = error.config || {};
+    const url = original.url || '';
+    const status = error.response?.status;
 
-    // 임시저장이나 첨부파일 API 오류는 경고 레벨로 처리
-    if (isDraftAPI || isAttachmentAPI) {
-      console.warn('⚠️ API 응답 오류:', {
-        url: url,
-        status: error.response?.status,
-        method: error.config?.method
-      });
-    } else {
-      // 기타 중요한 API 오류는 에러 레벨로 처리
-      console.error('🚨 응답 인터셉터 에러 감지:');
-      console.error('  - 상태 코드:', error.response?.status);
-      console.error('  - 응답 데이터:', error.response?.data);
-      console.error('  - 요청 URL:', error.config?.url);
-      console.error('  - 요청 방법:', error.config?.method);
+    // 네트워크/기타
+    if (!status) {
+      console.error('📡 네트워크 오류:', error.message);
+      return Promise.reject(error);
     }
 
-    if (error.response) {
-      const { status, data } = error.response;
+    // 401 이외는 그대로
+    if (status !== 401) {
+      console.error('🚨 응답 에러:', status, error.response?.data);
+      return Promise.reject(error);
+    }
 
-      // 401 Unauthorized
-      if (status === 401) {
-        console.log('🔐 인증 오류 감지 - 토큰 재확인');
+    // 공개 API/상태체크 or 인증 페이지라면 401이어도 리다이렉트 금지
+    const authPages = ['/login', '/signup', '/find-password', '/find-username', '/verify-signup'];
+    const onAuthPage = authPages.some((p) => window.location.pathname.includes(p));
 
-        // 게시판 조회 관련 API는 로그인 없이도 접근 가능하도록 허용
-        const publicReadOnlyAPIs = [
-          '/api/board/',           // 게시글 목록
-          '/api/activity/recent',  // 최근 활동들
-        ];
+    console.log('🔍 401 에러 발생:', { url, onAuthPage, isPublic: isPublicReadAPI(url) });
 
-        const requestUrl = error.config?.url || '';
-        const isPublicReadAPI = publicReadOnlyAPIs.some(api => requestUrl.includes(api)) ||
-                               requestUrl.match(/^\/api\/board\/[^\/]+$/) ||           // GET /api/board/{id}
-                               requestUrl.match(/^\/api\/board\/[^\/]+\/view$/) ||     // POST /api/board/{id}/view
-                               requestUrl.match(/^\/api\/board\/[^\/]+\/comments$/);   // GET /api/board/{id}/comments
+    if (isPublicReadAPI(url) || onAuthPage) {
+      console.log('👁️ 공개 API 또는 인증 페이지 → 리다이렉트 건너뜀');
+      return Promise.reject(error);
+    }
 
-        if (!isPublicReadAPI) {
-          console.log('🚨 401 오류 - 현재 경로:', window.location.pathname);
+    // 이미 리트라이한 요청이라면 더 이상 시도하지 않음
+    if (original._retry) {
+      console.log('🔁 재시도 후에도 401');
 
-          // 로그인 페이지나 회원가입 관련 페이지에서는 리다이렉트하지 않음
-          const authPages = ['/login', '/signup', '/find-password', '/find-username', '/verify-signup'];
-          const isAuthPage = authPages.some(page => window.location.pathname.includes(page));
+      // 첨부파일 관련 API는 비치명적으로 처리 (토큰 유지)
+      const isAttachmentAPI = url.includes('/api/attachment/') ||
+                              (url.includes('/api/boards/') && url.includes('/attachments'));
 
-          if (!isAuthPage) {
-            console.log('🔄 로그인 페이지로 리다이렉트');
-            // 토큰 제거 및 로그인 페이지로 리다이렉트
-            removeExpiredToken();
-            window.location.href = '/login';
-          } else {
-            console.log('🔐 인증 페이지에서 401 오류 - 리다이렉트하지 않음');
-          }
-        } else {
-          console.log('📖 공개 읽기 API - 로그인 리다이렉트 없이 계속 진행');
+      if (isAttachmentAPI) {
+        console.log('📎 첨부파일 API 401 → 토큰 유지하고 에러만 전달');
+        return Promise.reject(error);
+      }
+
+      // 다른 API는 기존과 동일하게 로그아웃 처리
+      console.log('🔁 토큰 제거');
+      removeExpiredToken();
+      // 토큰 만료 시 자동으로 로그인 페이지로 이동
+      if (!window.location.pathname.includes('/login')) {
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
+      }
+      return Promise.reject(new Error('인증이 만료되었습니다. 다시 로그인해주세요.'));
+    }
+
+    // 여기서 '한 번만' 리프레시 시도
+    original._retry = true;
+    try {
+      console.log('🔄 토큰 리프레시 시도...');
+      const refreshSuccess = await refreshAccessToken();
+
+      if (!refreshSuccess) {
+        console.log('❌ 리프레시 실패');
+        removeExpiredToken();
+        // 토큰 만료 시 자동으로 로그인 페이지로 이동
+        if (!window.location.pathname.includes('/login')) {
+          alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+          window.location.href = '/login';
         }
-
-        console.error('  - 에러 메시지:', data?.detail || data?.message);
-        console.error('  - 전체 응답:', JSON.stringify(data, null, 2));
+        return Promise.reject(new Error('인증이 만료되었습니다. 다시 로그인해주세요.'));
       }
 
-      // 403 Forbidden
-      if (status === 403) {
-        console.error('🚫 권한 오류:', data?.detail || '접근 권한이 없습니다.');
-      }
+      // 리프레시 성공 - 새 토큰으로 원 요청 재시도
+      const newToken = getAccessToken();
+      original.headers = original.headers || {};
+      original.headers.Authorization = `Bearer ${newToken}`;
+      original.withCredentials = false;
 
-      // 500 Internal Server Error - 임시저장/첨부파일이 아닌 경우만 에러 표시
-      if (status === 500 && !isDraftAPI && !isAttachmentAPI) {
-        console.error('💥 서버 오류:', data?.detail || '서버에서 오류가 발생했습니다.');
+      console.log('✅ 토큰 리프레시 성공, 요청 재시도');
+      return api.request(original);
+    } catch (e) {
+      // 리프레시 실패 → 토큰 제거
+      console.warn('리프레시 실패:', e?.message || e);
+      removeExpiredToken();
+      // 토큰 만료 시 자동으로 로그인 페이지로 이동
+      if (!window.location.pathname.includes('/login')) {
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
       }
-    } else if (error.request) {
-      console.error('📡 네트워크 오류: 서버에 연결할 수 없습니다.');
-    } else {
-      console.error('⚙️ 요청 설정 오류:', error.message);
+      return Promise.reject(new Error('인증이 만료되었습니다. 다시 로그인해주세요.'));
     }
-
-    return Promise.reject(error);
   }
 );
 
+// =============================
+// 실제 API 래퍼 함수들
+// =============================
+
 // 게시글 관련 API
 export const fetchBoardPosts = async (boardType) => {
-  try {
-    const response = await api.get('/api/board/', {
-      params: { category: boardType },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("게시글 가져오기 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get('/api/board/', { params: { category: boardType } });
+  return res.data;
 };
 
 export const createBoardPost = async (boardType, postData) => {
-  try {
-    const response = await api.post('/api/board/create', {
-      board: boardType,
-      ...postData,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("게시글 생성 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.post('/api/board/create', { board: boardType, ...postData });
+  return res.data;
 };
 
 export const fetchBoardPost = async (postId) => {
-  try {
-    const response = await api.get(`/api/board/${postId}`);
-    return response.data;
-  } catch (error) {
-    console.error("단일 게시글 조회 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get(`/api/board/${postId}`);
+  return res.data;
 };
 
 export const incrementBoardView = async (postId) => {
-  try {
-    const response = await api.post(`/api/board/${postId}/view`);
-    return response.data;
-  } catch (error) {
-    console.error("조회수 증가 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.post(`/api/board/${postId}/view`);
+  return res.data;
 };
 
 export const likeBoardPost = async (postId) => {
   try {
-    const response = await api.post(`/api/board/${postId}/like`);
-    const data = response.data;
+    const res = await api.post(`/api/board/${postId}/like`);
+    const data = res.data;
 
-    // 백엔드에서 로그인이 필요한 경우
     if (data.require_login || data.likeStatus === 'login_required') {
       return {
         success: false,
         requireLogin: true,
-        message: data.message || "좋아요 기능을 사용하려면 로그인이 필요합니다.",
-        likeStatus: data.likeStatus
+        message: data.message || '좋아요 기능을 사용하려면 로그인이 필요합니다.',
+        likeStatus: data.likeStatus,
       };
     }
 
-    // 성공적인 좋아요/좋아요 취소
     return {
       success: true,
       likeStatus: data.likeStatus,
       message: data.message,
-      requireLogin: false
+      requireLogin: false,
     };
   } catch (error) {
-    console.error("좋아요 처리 실패:", error.response?.data || error.message);
-
-    // 403 에러인 경우 로그인 필요로 처리
     if (error.response?.status === 403) {
       return {
         success: false,
         requireLogin: true,
-        message: "좋아요 기능을 사용하려면 로그인이 필요합니다.",
-        likeStatus: 'login_required'
+        message: '좋아요 기능을 사용하려면 로그인이 필요합니다.',
+        likeStatus: 'login_required',
       };
     }
-
     throw error;
   }
 };
 
 // 댓글 관련 API
 export const fetchComments = async (postId) => {
-  try {
-    const response = await api.get(`/api/board/${postId}/comments`);
-    return response.data;
-  } catch (error) {
-    console.error("댓글 가져오기 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get(`/api/board/${postId}/comments`);
+  return res.data;
 };
 
 export const createComment = async (postId, commentData) => {
-  try {
-    const response = await api.post(`/api/board/${postId}/comments/create`, commentData);
-    return response.data;
-  } catch (error) {
-    console.error("댓글 작성 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.post(`/api/board/${postId}/comments/create`, commentData);
+  return res.data;
 };
 
 export const deleteComment = async (postId, commentId) => {
-  try {
-    const response = await api.delete(`/api/board/${postId}/comments/${commentId}`);
-    return response.data;
-  } catch (error) {
-    console.error("댓글 삭제 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.delete(`/api/board/${postId}/comments/${commentId}`);
+  return res.data;
 };
 
 export const updateComment = async (postId, commentId, commentData) => {
-  try {
-    const response = await api.put(`/api/board/${postId}/comments/${commentId}`, commentData);
-    return response.data;
-  } catch (error) {
-    console.error("댓글 수정 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.put(`/api/board/${postId}/comments/${commentId}`, commentData);
+  return res.data;
 };
 
-/**
- * 현재 로그인된 사용자 정보 가져오기 (/api/auth/me)
- */
+// 현재 로그인된 사용자 정보
 export const getCurrentUser = async () => {
+  // ✅ 토큰이 아예 없으면 서버를 호출하지 않고 게스트 처리 (초기 401 방지)
+  const at = getAccessToken();
+  if (!at) {
+    return { user: null, guest: true };
+  }
+
   try {
-    const response = await api.get('/api/auth/me');
-    return response.data.user || response.data; // user 객체 직접 반환
+    const res = await api.get('/api/auth/me');
+    console.log('🔍 getCurrentUser API 응답:', res.data);
+
+    // 응답 형식을 일관되게 처리
+    if (res.data.user) {
+      return { user: res.data.user, guest: false };
+    } else if (res.data && (res.data.id || res.data._id)) {
+      // 응답이 직접 사용자 객체인 경우
+      return { user: res.data, guest: false };
+    } else {
+      console.warn('예상하지 못한 응답 형식:', res.data);
+      return { user: null, guest: true };
+    }
   } catch (error) {
-    console.error("사용자 정보 가져오기 실패:", error.response?.data || error.message);
-    throw error;
+    console.error('getCurrentUser 실패:', error);
+    return { user: null, guest: true };
   }
 };
 
-// 최근 활동 관련 API
+// 최근 활동 관련
 export const fetchRecentActivities = async (limit = 10) => {
-  try {
-    const response = await api.get('/api/activity/recent', {
-      params: { limit },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("최근 활동 가져오기 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get('/api/activity/recent', { params: { limit } });
+  return res.data;
 };
 
-// 최근 게시글 활동만 가져오기
 export const fetchRecentPosts = async (limit = 10) => {
-  try {
-    const response = await api.get('/api/activity/recent-posts', {
-      params: { limit },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("최근 게시글 활동 가져오기 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get('/api/activity/recent-posts', { params: { limit } });
+  return res.data;
 };
 
-// 최신 댓글 활동 가져오기
 export const fetchRecentComments = async (limit = 10) => {
-  try {
-    const response = await api.get('/api/activity/recent-comments', {
-      params: { limit },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("최신 댓글 활동 가져오기 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get('/api/activity/recent-comments', { params: { limit } });
+  return res.data;
 };
 
-// 최근 가입 활동 가져오기
 export const fetchRecentSignups = async (limit = 10) => {
-  try {
-    const response = await api.get('/api/activity/recent-signups', {
-      params: { limit },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("최근 가입 활동 가져오기 실패:", error.response?.data || error.message);
-    throw error;
-  }
+  const res = await api.get('/api/activity/recent-signups', { params: { limit } });
+  return res.data;
 };
 
 // 로그아웃
 export const logoutUser = async () => {
   try {
     await api.post('/api/auth/logout');
-    // 클라이언트에서 토큰 제거
-    sessionStorage.removeItem('access_token');
-    localStorage.removeItem('access_token');
-    sessionStorage.removeItem('user');
-    localStorage.removeItem('user');
-  } catch (error) {
-    // 서버 로그아웃 실패해도 클라이언트 토큰은 제거
-    sessionStorage.removeItem('access_token');
-    localStorage.removeItem('access_token');
-    sessionStorage.removeItem('user');
-    localStorage.removeItem('user');
-
-    console.error("로그아웃 실패:", error.response?.data || error.message);
-    throw error;
+  } finally {
+    removeExpiredToken(); // 서버 실패해도 클라이언트 토큰은 제거
   }
 };
 
