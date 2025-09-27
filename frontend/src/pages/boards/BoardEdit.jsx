@@ -101,15 +101,15 @@ function BoardEdit() {
             }
           } else if (data.board === '질문과답변') {
             // 질문과답변: "[질문합니다]" 형태
-            const cleanPrefix = data.prefix.replace(/[\[\]]/g, '');
+            const cleanPrefix = data.prefix.replace(/[[\]]/g, '');
             setSelectedPrefix(cleanPrefix);
           } else if (data.board === '회의기록') {
             // 회의기록: "[정기회의]" 형태
-            const cleanPrefix = data.prefix.replace(/[\[\]]/g, '');
+            const cleanPrefix = data.prefix.replace(/[[\]]/g, '');
             setSelectedPrefix(cleanPrefix);
           } else if (data.board === '학회공모전') {
             // 학회공모전: "[학회정보]" 형태
-            const cleanPrefix = data.prefix.replace(/[\[\]]/g, '');
+            const cleanPrefix = data.prefix.replace(/[[\]]/g, '');
             setSelectedPrefix(cleanPrefix);
           } else {
             // 기타 게시판: 단순 말머리
