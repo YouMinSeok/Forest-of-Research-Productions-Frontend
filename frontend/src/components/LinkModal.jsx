@@ -11,8 +11,31 @@ function LinkModal({ isOpen, onClose, onInsert }) {
       setUrl('');
       setPreviewType('none');
       setThumbnail('');
+
+      // 모달이 열릴 때 body 스크롤 방지
+      document.body.style.overflow = 'hidden';
+    } else {
+      // 모달이 닫힐 때 body 스크롤 복원
+      document.body.style.overflow = '';
     }
-  }, [isOpen]);
+
+    // ESC 키 이벤트 리스너 추가
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    // 컴포넌트 언마운트 시 스크롤 복원 및 이벤트 리스너 제거
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (!url) {
@@ -65,10 +88,16 @@ function LinkModal({ isOpen, onClose, onInsert }) {
     onClose();
   };
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="modal-backdrop">
+    <div className="modal-backdrop" onClick={handleBackdropClick}>
       <div className="modal-content link-modal">
         <div className="modal-header">
           <h3>링크 삽입</h3>
