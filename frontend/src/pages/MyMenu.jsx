@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api, { getCurrentUser } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import { useOptimizedSkeleton } from '../utils/skeletonHooks';
 import { SkeletonProfile, SkeletonListItem } from '../components/Skeleton';
 import './MyMenu.css';
 
 function MyMenu() {
+  const { user } = useAuth(); // AuthContext에서 사용자 정보 가져오기
   const [userInfo, setUserInfo] = useState(null);
   const [stats, setStats] = useState({
     totalPosts: 0,
@@ -17,7 +19,7 @@ function MyMenu() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // 최적화된 skeleton 훅들
+  // 최적화된 skeleton 훅들 - 조건부 로직 이전으로 이동
   const profileSkeleton = useOptimizedSkeleton(loading, [{}], {
     smartOptions: { minDisplayTime: 1000, fadeInDelay: 0 },
     progressiveOptions: { enableStagger: false },
@@ -90,8 +92,33 @@ function MyMenu() {
   }, [fetchUserStats]);
 
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    if (user) {
+      fetchUserData();
+    }
+  }, [fetchUserData, user]);
+
+  // 로그인하지 않은 경우 안내 컴포넌트 표시
+  if (!user) {
+    return (
+      <div className="mymenu-container">
+        <div className="login-required-notice">
+          <div className="notice-content">
+            <div className="notice-icon">🔐</div>
+            <h3>로그인이 필요한 서비스입니다</h3>
+            <p>마이메뉴를 이용하시려면 먼저 로그인해주세요.</p>
+            <div className="notice-actions">
+              <Link to="/login" className="login-btn">
+                로그인하기
+              </Link>
+              <Link to="/signup" className="signup-btn">
+                회원가입
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handlePostClick = (post) => {
     console.log('🔍 MyMenu handlePostClick - 전체 post 객체:', post);

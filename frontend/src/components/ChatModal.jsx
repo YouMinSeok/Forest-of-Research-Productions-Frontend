@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import EmojiPicker from 'emoji-picker-react';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 import { SkeletonChatMessage } from './Skeleton';
 import { useOptimizedSkeleton } from '../utils/skeletonHooks';
 import './ChatModal.css';
 
-function ChatModal({ targetUser, currentUser, roomId, onClose, onMinimize, isMinimized }) {
+function ChatModal({ targetUser, roomId, onClose, onMinimize, isMinimized }) {
+  const { user: currentUser } = useAuth(); // AuthContext 사용
+
   // 첫 번째 렌더링만 로그 출력
   const isFirstRender = useRef(true);
   if (isFirstRender.current) {
@@ -193,35 +197,17 @@ function ChatModal({ targetUser, currentUser, roomId, onClose, onMinimize, isMin
   const loadMessages = async () => {
     try {
       setLoading(true);
-      const hostIp = process.env.REACT_APP_HOST_IP;
-    const port = process.env.REACT_APP_API_PORT || '8080';
+      console.log('📥 메시지 로딩 시도:', `/api/chat/room/${roomId}/messages`);
 
-    if (!hostIp) {
-      throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
-    }
-
-    const backendUrl = `http://${hostIp}:${port}`;
-      const messagesUrl = `${backendUrl}/api/chat/room/${roomId}/messages`;
-
-      console.log('📥 메시지 로딩 시도:', messagesUrl);
-
-      const response = await fetch(messagesUrl, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('📥 메시지 로딩 성공:', data.length, '개');
-        setMessages(data);
-        // 메시지 로딩 후에는 무조건 맨 아래로 스크롤
-        setTimeout(() => scrollToBottomIfNeeded(true), 100);
-      } else {
-        throw new Error('메시지를 불러올 수 없습니다.');
-      }
+      // api.js의 통합 클라이언트 사용
+      const response = await api.get(`/api/chat/room/${roomId}/messages`);
+      console.log('📥 메시지 로딩 성공:', response.data.length, '개');
+      setMessages(response.data);
+      // 메시지 로딩 후에는 무조건 맨 아래로 스크롤
+      setTimeout(() => scrollToBottomIfNeeded(true), 100);
     } catch (error) {
       console.error('❌메시지 로딩 에러:', error);
-      setError(error.message);
+      setError('메시지를 불러올 수 없습니다.');
     } finally {
       setLoading(false);
     }
@@ -358,6 +344,11 @@ function ChatModal({ targetUser, currentUser, roomId, onClose, onMinimize, isMin
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, dragOffset.x, dragOffset.y, position.x, position.y]);
+
+  // 로그인하지 않은 경우 채팅 모달을 표시하지 않음
+  if (!currentUser) {
+    return null;
+  }
 
   if (!targetUser || !currentUser) {
     console.log('❌ ChatModal 렌더링 중단 - 필요한 데이터 누락:', { targetUser, currentUser });

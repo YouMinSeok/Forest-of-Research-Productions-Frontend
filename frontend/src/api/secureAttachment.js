@@ -70,11 +70,23 @@ export const generateDownloadToken = async (attachmentId) => {
 
 // 게시글의 버전별 첨부파일 조회
 export const getPostAttachmentsWithVersions = async (postId) => {
-  const response = await api.get(
-    `/api/secure-attachment/post/${postId}/versions`
-  );
+  try {
+    const response = await api.get(
+      `/api/secure-attachment/post/${postId}/versions`
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    console.warn('버전별 첨부파일 조회 중 오류 발생:', error);
+
+    // 서버 오류 시 빈 객체 반환 (게스트 사용자 401 포함)
+    if (error.response?.status === 400 || error.response?.status === 401 || error.response?.status === 404 || error.response?.status === 500) {
+      return { version_groups: {} };
+    }
+
+    // 기타 오류 시 에러 재발생
+    throw error;
+  }
 };
 
 // 보안 파일 삭제

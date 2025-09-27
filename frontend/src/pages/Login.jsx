@@ -1,37 +1,52 @@
+// src/pages/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 import logoImg from '../assets/logo.png';
 import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+
+// ⬇️ 추가: 로그인 상태 저장 + 자동 리프레시 스케줄러
+import { saveLoginState, scheduleAutoRefresh } from '../services/auth';
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { loadUser } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await api.post('/api/auth/login', {
         email,
-        password
+        password,
       });
 
       const data = response.data;
-      alert("로그인 성공!");
+      alert('로그인 성공!');
 
-      // 응답받은 토큰과 사용자 정보를 localStorage에 저장
-      if (data.access_token) {
-        localStorage.setItem('access_token', data.access_token);
-      }
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-      }
+      // 백엔드가 refresh_token을 함께 주면 같이 저장됨
+      // (없어도 saveLoginState가 알아서 처리)
+      saveLoginState(data.access_token, data.user, data.refresh_token);
 
-      navigate("/");
+      // 자동 리프레시 예약(백그라운드 루프)
+      scheduleAutoRefresh();
+
+      // AuthContext에 사용자 정보 업데이트 알림
+      await loadUser();
+
+      // 커스텀 이벤트 발생으로 AuthContext에 알림
+      window.dispatchEvent(new Event('authChange'));
+
+      navigate('/');
     } catch (error) {
-      console.error("로그인 요청 중 오류 발생:", error);
-      const errorMessage = error.response?.data?.error || error.response?.data?.detail || error.response?.data?.message || "로그인 실패";
+      console.error('로그인 요청 중 오류 발생:', error);
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        '로그인 실패';
       alert(errorMessage);
     }
   };
@@ -58,6 +73,7 @@ function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    autoComplete="username"
                   />
                 </div>
                 <div className="login-field">
@@ -68,6 +84,7 @@ function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete="current-password"
                   />
                 </div>
                 <button type="submit" className="login-btn">로그인</button>

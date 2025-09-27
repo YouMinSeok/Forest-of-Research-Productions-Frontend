@@ -62,7 +62,7 @@ function CommentSection({ postId, onCommentAdded, onCommentDeleted, allowComment
         });
         setIsLoggedIn(true);
       } catch (error) {
-        console.log("로그인된 사용자 정보를 가져오지 못했습니다.", error);
+        console.log("게스트 사용자로 설정됩니다.");
         setUserName("Guest");
         setCurrentUser(null);
         setIsLoggedIn(false);

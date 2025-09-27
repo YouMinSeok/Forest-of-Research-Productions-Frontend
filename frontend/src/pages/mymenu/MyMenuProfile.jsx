@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getCurrentUser } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import { SkeletonProfile, SkeletonListItem } from '../../components/Skeleton';
 import './MyMenuProfile.css';
 
 function MyMenuProfile() {
+  const { user } = useAuth(); // AuthContext에서 사용자 정보 가져오기
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +15,7 @@ function MyMenuProfile() {
     name: ''
   });
 
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
+  // fetchUserInfo 함수 정의
   const fetchUserInfo = async () => {
     try {
       setLoading(true);
@@ -32,6 +32,36 @@ function MyMenuProfile() {
       setLoading(false);
     }
   };
+
+  // useEffect - 조건부 로직 이전으로 이동
+  useEffect(() => {
+    if (user) {
+      fetchUserInfo();
+    }
+  }, [user]);
+
+  // 로그인하지 않은 경우 안내 컴포넌트 표시
+  if (!user) {
+    return (
+      <div className="profile-container">
+        <div className="login-required-notice">
+          <div className="notice-content">
+            <div className="notice-icon">👤</div>
+            <h3>로그인이 필요한 서비스입니다</h3>
+            <p>프로필 정보를 확인하시려면 먼저 로그인해주세요.</p>
+            <div className="notice-actions">
+              <Link to="/login" className="login-btn">
+                로그인하기
+              </Link>
+              <Link to="/signup" className="signup-btn">
+                회원가입
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);

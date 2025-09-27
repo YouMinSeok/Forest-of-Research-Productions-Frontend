@@ -238,6 +238,82 @@
   background-color: #3367d6;
 }
 
+/* 로그인 안내 스타일 */
+.login-required-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.notice-content {
+  text-align: center;
+  max-width: 400px;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notice-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.notice-content h3 {
+  color: #495057;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.notice-content p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.login-btn, .signup-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.login-btn {
+  background: #4285f4;
+  color: white;
+}
+
+.login-btn:hover {
+  background: #3367d6;
+  transform: translateY(-1px);
+}
+
+.signup-btn {
+  background: white;
+  color: #4285f4;
+  border-color: #4285f4;
+}
+
+.signup-btn:hover {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .mymenu-profile {

@@ -124,8 +124,8 @@ export const getPostAttachments = async (postId) => {
   } catch (error) {
     console.warn('첨부파일 조회 중 오류 발생:', error);
 
-    // 서버 오류 시 빈 배열 반환
-    if (error.response?.status === 400 || error.response?.status === 404 || error.response?.status === 500) {
+    // 서버 오류 시 빈 배열 반환 (게스트 사용자 401 포함)
+    if (error.response?.status === 400 || error.response?.status === 401 || error.response?.status === 404 || error.response?.status === 500) {
       return { attachments: [] };
     }
 

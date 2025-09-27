@@ -5,6 +5,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchBoardPost, incrementBoardView, likeBoardPost, deleteBoardPost } from '../../api/board';
 import { getPostAttachmentsWithVersions, downloadFileHelper } from '../../api/secureAttachment';
 import { getPostAttachments } from '../../api/attachment';
+import api from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import CommentSection from '../../components/CommentSection';
 import ChatModal from '../../components/ChatModal';
 import UserBadge from '../../components/UserBadge';
@@ -18,6 +20,7 @@ import './BoardDetail.css';
 function BoardDetail() {
   const { boardType, postId } = useParams();
   const navigate = useNavigate();
+  const { user: currentUser, loading } = useAuth();
 
   // boardType이 undefined인 경우 기본값 설정
   const category = boardType || '자유게시판';
@@ -25,7 +28,6 @@ function BoardDetail() {
   const [post, setPost] = useState(null);
   const [commentCount, setCommentCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [isPrivatePost, setIsPrivatePost] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
 
@@ -106,53 +108,8 @@ function BoardDetail() {
       }
     }
 
-    // JWT 토큰으로 현재 사용자 정보 가져오기
-    async function loadCurrentUser() {
-      try {
-        const hostIp = process.env.REACT_APP_HOST_IP;
-        const port = process.env.REACT_APP_API_PORT || '8080';
-
-        if (!hostIp) {
-          throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
-        }
-
-        const backendUrl = `http://${hostIp}:${port}`;
-        const response = await fetch(`${backendUrl}/api/auth/me`, {
-          method: 'GET',
-          credentials: 'include', // 쿠키 포함
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          console.log('JWT에서 가져온 사용자 정보:', userData.user);
-
-          // ID 필드 통일: 백엔드에서 사용하는 user["id"]와 맞춤
-          const userId = userData.user.id || userData.user._id;
-
-          setCurrentUser({
-            id: userId,
-            name: userData.user.name,
-            email: userData.user.email,
-            role: userData.user.role || 'student',
-            permissions: userData.user.permissions || [],
-            is_admin: userData.user.is_admin || false
-          });
-
-          console.log('설정된 currentUser ID:', userId);
-          console.log('게시글 writer_id:', post?.writer_id);
-        } else {
-          console.log('사용자 정보 가져오기 실패 (로그인 안됨)');
-          setCurrentUser(null);
-        }
-      } catch (error) {
-        console.error('사용자 정보 로딩 에러:', error);
-        setCurrentUser(null);
-      }
-    }
-
     loadPost();
-    loadCurrentUser();
-  }, [postId, post?.writer_id]);
+  }, [postId]);
 
   // 1:1 채팅 시작 함수 추가
   const startChat = async () => {
@@ -172,29 +129,13 @@ function BoardDetail() {
     }
 
     try {
-      const hostIp = process.env.REACT_APP_HOST_IP;
-      const port = process.env.REACT_APP_API_PORT || '8080';
-
-      if (!hostIp) {
-        throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
-      }
-
-      const backendUrl = `http://${hostIp}:${port}`;
-
-      const response = await fetch(`${backendUrl}/api/chat/room/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          target_user_id: post.writer_id,
-          target_user_name: post.writer
-        })
+      const response = await api.post('/api/chat/room/create', {
+        target_user_id: post.writer_id,
+        target_user_name: post.writer
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response.data) {
+        const data = response.data;
 
         const targetUser = {
           id: post.writer_id,
@@ -558,6 +499,7 @@ function BoardDetail() {
   const canDelete = currentUser && post && canDeletePost(currentUser, post);
 
   // 디버깅용 로그
+  console.log('Auth loading:', loading);
   console.log('currentUser:', currentUser);
   console.log('post.writer_id:', post?.writer_id);
   console.log('isAuthor:', isAuthor);

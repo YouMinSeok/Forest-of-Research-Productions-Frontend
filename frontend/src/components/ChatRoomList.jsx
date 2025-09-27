@@ -1,57 +1,53 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 import './ChatRoomList.css';
 import GroupChatCreateModal from './GroupChatCreateModal';
 
-function ChatRoomList({ currentUser, onRoomSelect, onClose }) {
+function ChatRoomList({ onRoomSelect, onClose }) {
+  const { user } = useAuth(); // AuthContext 사용
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showGroupModal, setShowGroupModal] = useState(false);
 
   useEffect(() => {
-    if (currentUser) {
+    if (user) {
       loadChatRooms();
     }
-  }, [currentUser]);
+  }, [user]);
 
   const loadChatRooms = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const hostIp = process.env.REACT_APP_HOST_IP;
-      const port = process.env.REACT_APP_API_PORT || '8080';
-
-      if (!hostIp) {
-        throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
-      }
-
-      const backendUrl = `http://${hostIp}:${port}`;
-
-      const response = await fetch(`${backendUrl}/api/chat/rooms/all`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // 쿠키 포함
-      });
-
-      if (response.ok) {
-        const rooms = await response.json();
-        console.log('📋 채팅방 목록 로드됨:', rooms);
-        setChatRooms(rooms);
-      } else {
-        const errorText = await response.text();
-        console.error('API 오류:', response.status, errorText);
-        throw new Error(`채팅방 목록을 불러올 수 없습니다. (${response.status})`);
-      }
+      // api.js의 통합 클라이언트 사용
+      const response = await api.get('/api/chat/rooms/all');
+      console.log('📋 채팅방 목록 로드됨:', response.data);
+      setChatRooms(response.data || []);
     } catch (error) {
       console.error('채팅방 목록 로딩 오류:', error);
-      setError(error.message);
+      setError('채팅방 목록을 불러올 수 없습니다.');
     } finally {
       setLoading(false);
     }
   };
+
+  // 로그인하지 않은 경우 안내 메시지
+  if (!user) {
+    return (
+      <div className="chat-room-list">
+        <div className="chat-header">
+          <h3>채팅</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <div className="login-required-notice">
+          <p>채팅 기능을 사용하려면 로그인해주세요.</p>
+        </div>
+      </div>
+    );
+  }
 
   const formatLastMessageTime = (dateString) => {
     if (!dateString) return '';
@@ -109,41 +105,19 @@ function ChatRoomList({ currentUser, onRoomSelect, onClose }) {
 
   const handleCreateGroupChat = async (groupData) => {
     try {
-      const hostIp = process.env.REACT_APP_HOST_IP;
-      const port = process.env.REACT_APP_API_PORT || '8080';
+      const response = await api.post('/api/chat/groups/create', groupData);
+      console.log('그룹 채팅 생성됨:', response.data);
 
-      if (!hostIp) {
-        throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
-      }
+      // 채팅방 목록 새로고침
+      loadChatRooms();
 
-      const backendUrl = `http://${hostIp}:${port}`;
+      // 새로 생성된 그룹 채팅방 열기
+      onRoomSelect({
+        id: response.data.room_id,
+        name: response.data.name,
+        isGroup: true
+      }, response.data.room_id);
 
-      const response = await fetch(`${backendUrl}/api/chat/groups/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(groupData),
-      });
-
-      if (response.ok) {
-        const newGroupRoom = await response.json();
-        console.log('그룹 채팅 생성됨:', newGroupRoom);
-
-        // 채팅방 목록 새로고침
-        loadChatRooms();
-
-        // 새로 생성된 그룹 채팅방 열기
-        onRoomSelect({
-          id: newGroupRoom.room_id,
-          name: newGroupRoom.name,
-          isGroup: true
-        }, newGroupRoom.room_id);
-
-      } else {
-        throw new Error('그룹 채팅 생성에 실패했습니다.');
-      }
     } catch (error) {
       console.error('그룹 채팅 생성 오류:', error);
       throw error;
@@ -262,7 +236,7 @@ function ChatRoomList({ currentUser, onRoomSelect, onClose }) {
       <GroupChatCreateModal
         isOpen={showGroupModal}
         onClose={handleGroupModalClose}
-        currentUser={currentUser}
+        currentUser={user}
         onCreateGroup={handleCreateGroupChat}
       />
     </>

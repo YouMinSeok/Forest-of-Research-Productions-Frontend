@@ -30,9 +30,23 @@ export const aiApi = {
         throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
       }
 
-      // 상대 경로 사용 (nginx 프록시를 통해 접근)
+      // API baseURL 계산
+      const getApiBaseUrl = () => {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+        if (backendUrl) return backendUrl;
+        if (apiBaseUrl) return apiBaseUrl;
 
-      const response = await fetch(`${AI_BASE_URL}/chat/stream`, {
+        const hostIp = process.env.REACT_APP_HOST_IP;
+        const port = process.env.REACT_APP_API_PORT || '8080';
+        if (!hostIp) return 'http://localhost:8000';
+
+        const protocol = (port === '443' || port === '80') ? 'https' : 'http';
+        const portSuffix = (port === '443' || port === '80') ? '' : `:${port}`;
+        return `${protocol}://${hostIp}${portSuffix}`;
+      };
+
+      const response = await fetch(`${getApiBaseUrl()}${AI_BASE_URL}/chat/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

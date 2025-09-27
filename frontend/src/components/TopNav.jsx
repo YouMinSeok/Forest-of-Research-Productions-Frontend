@@ -8,32 +8,16 @@ import {
   faUser,
   faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import { getCurrentUser, logoutUser } from '../services/api';
+import { logoutUser } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import './TopNav.css';
 
 function TopNav({ onSidebarTypeChange }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-
-  // JWT 토큰으로 사용자 정보 로드
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await getCurrentUser();
-        setUser(userData);
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log("사용자 인증 검증 실패 - 오프라인 또는 서버 연결 문제");
-        }
-        setUser(null);
-      }
-    };
-
-    fetchUser();
-  }, [location.pathname]); // 페이지 이동 시마다 사용자 정보 확인
 
   // 모바일 메뉴 토글
   const toggleMobileMenu = () => {
@@ -63,11 +47,11 @@ function TopNav({ onSidebarTypeChange }) {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      setUser(null);
+      logout(); // AuthContext의 logout 사용
       navigate("/");
     } catch (error) {
       // 네트워크 오류여도 클라이언트 토큰은 이미 제거했으므로 홈으로 이동
-      setUser(null);
+      logout(); // AuthContext의 logout 사용
       navigate("/");
 
       // 개발 모드에서만 콘솔에 표시
@@ -130,9 +114,9 @@ function TopNav({ onSidebarTypeChange }) {
               </li>
               <li>
                 <NavLink
-                  to="/cafe"
-                  className={isActiveTab('/cafe') ? 'active' : ''}
-                  onClick={() => handleMobileNavClick('cafe', '/cafe')}
+                  to="/research/연구자료"
+                  className={isActiveTab('/research') ? 'active' : ''}
+                  onClick={() => handleMobileNavClick('research', '/research/연구자료')}
                 >
                   연구카페
                 </NavLink>

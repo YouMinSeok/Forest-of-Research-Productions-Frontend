@@ -254,7 +254,6 @@ function RightSidebar() {
       {/* 채팅방 목록 모달 */}
       {showChatRoomList && (
         <ChatRoomList
-          currentUser={currentUser}
           onRoomSelect={handleRoomSelect}
           onClose={() => setShowChatRoomList(false)}
         />
@@ -264,7 +263,6 @@ function RightSidebar() {
       {showChatModal && chatTarget && chatRoomId && (
         <ChatModal
           targetUser={chatTarget}
-          currentUser={currentUser}
           roomId={chatRoomId}
           onClose={closeChatModal}
           onMinimize={minimizeChatModal}

@@ -243,11 +243,14 @@ export const draftManager = {
       if (title.trim() || content.trim()) {
         // 동기적 자동저장 시도 (fetch with keepalive)
         try {
-          fetch('/api/draft/auto-save', {
+          const token = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
+          const apiBaseUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+
+          fetch(`${apiBaseUrl}/api/draft/auto-save`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+              'Authorization': token ? `Bearer ${token}` : ''
             },
             body: JSON.stringify({
               draft_id: draftId,

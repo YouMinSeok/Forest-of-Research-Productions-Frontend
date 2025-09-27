@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api, { getCurrentUser } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import './MyMenuComments.css';
 
 function MyMenuComments() {
+  const { user } = useAuth(); // AuthContext에서 사용자 정보 가져오기
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,14 +52,34 @@ function MyMenuComments() {
   }, [currentUser, page]);
 
   useEffect(() => {
-    fetchCurrentUser();
-  }, [fetchCurrentUser]);
-
-  useEffect(() => {
-    if (currentUser) {
+    if (user) {
+      fetchCurrentUser();
       fetchMyComments();
     }
-  }, [currentUser, page, fetchMyComments]);
+  }, [fetchCurrentUser, fetchMyComments, user]);
+
+  // 로그인하지 않은 경우 안내 컴포넌트 표시
+  if (!user) {
+    return (
+      <div className="comments-container">
+        <div className="login-required-notice">
+          <div className="notice-content">
+            <div className="notice-icon">💬</div>
+            <h3>로그인이 필요한 서비스입니다</h3>
+            <p>내 댓글을 확인하시려면 먼저 로그인해주세요.</p>
+            <div className="notice-actions">
+              <Link to="/login" className="login-btn">
+                로그인하기
+              </Link>
+              <Link to="/signup" className="signup-btn">
+                회원가입
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const loadMore = () => {
     if (!loading && hasMore) {
