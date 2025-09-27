@@ -62,19 +62,26 @@
       "react-app/jest"
     ],
     "rules": {
-      "react-hooks/exhaustive-deps": "off",
+      "react-hooks/exhaustive-deps": "warn",
       "react/jsx-no-target-blank": "error",
-      "react/no-array-index-key": "off",
+      "react/no-array-index-key": "warn",
       "react/prop-types": "off",
-      "no-console": "off",
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
       "prefer-const": "error",
       "no-unused-vars": [
         "error",
         {
           "argsIgnorePattern": "^_"
         }
-      ],
-      "no-useless-escape": "off"
+      ]
     }
   },
   "browserslist": {
