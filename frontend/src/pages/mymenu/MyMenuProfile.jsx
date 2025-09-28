@@ -5,6 +5,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { SkeletonProfile, SkeletonListItem } from '../../components/Skeleton';
 import './MyMenuProfile.css';
 
+// 토큰 가져오기 함수
+const getAccessToken = () =>
+  sessionStorage.getItem('access_token') || localStorage.getItem('access_token') || null;
+
 function MyMenuProfile() {
   const { user } = useAuth(); // AuthContext에서 사용자 정보 가져오기
   const [userInfo, setUserInfo] = useState(null);
@@ -76,12 +80,18 @@ function MyMenuProfile() {
     try {
       setLoading(true);
       // 실제 API 호출하여 서버에 업데이트
+      const token = getAccessToken();
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/auth/profile', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers,
         body: JSON.stringify({
           name: editForm.name
         })
