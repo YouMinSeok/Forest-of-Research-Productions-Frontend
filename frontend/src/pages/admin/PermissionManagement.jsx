@@ -5,6 +5,26 @@ import './PermissionManagement.css';
 
 // api.js를 사용하여 일관된 인증 방식 적용
 
+// 백엔드 URL 정의
+const getBackendUrl = () => {
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
+  if (backendUrl) return backendUrl;
+  if (apiBaseUrl) return apiBaseUrl;
+
+  const hostIp = process.env.REACT_APP_HOST_IP;
+  const port = process.env.REACT_APP_API_PORT || '8080';
+  if (!hostIp) {
+    throw new Error('백엔드 URL이 설정되지 않았습니다. REACT_APP_BACKEND_URL 또는 REACT_APP_HOST_IP를 설정해주세요.');
+  }
+  const protocol = port === '443' || port === '80' ? 'https' : 'http';
+  const portSuffix = (port === '443' || port === '80') ? '' : `:${port}`;
+  return `${protocol}://${hostIp}${portSuffix}`;
+};
+
+const backendUrl = getBackendUrl();
+
 const PermissionManagement = () => {
   const [permissions, setPermissions] = useState([]);
   const [roles, setRoles] = useState([]);
