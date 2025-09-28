@@ -49,7 +49,8 @@ function GroupChatCreateModal({ isOpen, onClose, currentUser, onCreateGroup }) {
         throw new Error('REACT_APP_HOST_IP 환경변수가 설정되지 않았습니다. .env 파일에서 IP를 설정해주세요.');
       }
 
-      const backendUrl = `http://${hostIp}:${port}`;
+      // 환경변수에서 백엔드 URL 가져오기 (HTTPS 지원)
+      const backendUrl = process.env.REACT_APP_API_BASE_URL || process.env.REACT_APP_BACKEND_URL || `http://${hostIp}:${port}`;
 
       const token = getAccessToken();
       const headers = {
