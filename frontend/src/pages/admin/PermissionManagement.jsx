@@ -5,29 +5,7 @@ import './PermissionManagement.css';
 
 // api.js를 사용하여 일관된 인증 방식 적용
 
-// 백엔드 URL 정의
-const getBackendUrl = () => {
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-  if (backendUrl) return backendUrl;
-  if (apiBaseUrl) return apiBaseUrl;
-
-  const hostIp = process.env.REACT_APP_HOST_IP;
-  const port = process.env.REACT_APP_API_PORT || '8080';
-  if (!hostIp) {
-    throw new Error('백엔드 URL이 설정되지 않았습니다. REACT_APP_BACKEND_URL 또는 REACT_APP_HOST_IP를 설정해주세요.');
-  }
-  const protocol = port === '443' || port === '80' ? 'https' : 'http';
-  const portSuffix = (port === '443' || port === '80') ? '' : `:${port}`;
-  return `${protocol}://${hostIp}${portSuffix}`;
-};
-
-const backendUrl = getBackendUrl();
-
-// 토큰 가져오기 함수
-const getAccessToken = () =>
-  sessionStorage.getItem('access_token') || localStorage.getItem('access_token') || null;
 
 const PermissionManagement = () => {
   const [permissions, setPermissions] = useState([]);
@@ -81,54 +59,37 @@ const PermissionManagement = () => {
 
   const handleAddPermission = async (userId, permission) => {
     try {
-      const token = getAccessToken();
-      const headers = {
-        'Content-Type': 'application/json',
-      };
+      console.log('🔍 권한 추가 요청:', { userId, permission });
 
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`${backendUrl}/api/admin/users/${userId}/permissions`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ permission })
+      // api 모듈을 사용하여 일관성 유지
+      const response = await api.post(`/api/admin/users/${userId}/permissions`, {
+        permission
       });
 
-      if (!response.ok) {
-        throw new Error('권한 추가에 실패했습니다');
-      }
-
+      console.log('✅ 권한 추가 성공:', response.data);
       await fetchData();
       alert('권한이 성공적으로 추가되었습니다');
     } catch (err) {
-      alert(err.message);
+      console.error('❌ 권한 추가 오류:', err);
+      const errorMessage = err.response?.data?.message || err.message || '권한 추가에 실패했습니다';
+      alert(errorMessage);
     }
   };
 
   const handleRemovePermission = async (userId, permission) => {
     try {
-      const token = getAccessToken();
-      const headers = {};
+      console.log('🔍 권한 제거 요청:', { userId, permission });
 
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
+      // api 모듈을 사용하여 일관성 유지
+      await api.delete(`/api/admin/users/${userId}/permissions/${permission}`);
 
-      const response = await fetch(`${backendUrl}/api/admin/users/${userId}/permissions/${permission}`, {
-        method: 'DELETE',
-        headers
-      });
-
-      if (!response.ok) {
-        throw new Error('권한 제거에 실패했습니다');
-      }
-
+      console.log('✅ 권한 제거 성공');
       await fetchData();
       alert('권한이 성공적으로 제거되었습니다');
     } catch (err) {
-      alert(err.message);
+      console.error('❌ 권한 제거 오류:', err);
+      const errorMessage = err.response?.data?.message || err.message || '권한 제거에 실패했습니다';
+      alert(errorMessage);
     }
   };
 
@@ -321,7 +282,7 @@ const PermissionManagement = () => {
 const PermissionModal = ({ user, permissions, onAddPermission, onClose }) => {
   const [selectedPermission, setSelectedPermission] = useState('');
 
-  const handleAddPermission = () => {
+  const handleAddPermissionClick = () => {
     if (selectedPermission && !user.permissions.includes(selectedPermission)) {
       onAddPermission(user.id, selectedPermission);
       setSelectedPermission('');
@@ -372,7 +333,7 @@ const PermissionModal = ({ user, permissions, onAddPermission, onClose }) => {
                 ))}
               </select>
               <button
-                onClick={handleAddPermission}
+                onClick={handleAddPermissionClick}
                 disabled={!selectedPermission}
                 className="add-btn"
               >
