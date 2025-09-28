@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 import './UserManagement.css';
-
 
 
 
@@ -34,17 +34,10 @@ const UserManagement = () => {
         ...(roleFilter && { role: roleFilter })
       });
 
-      const response = await fetch(`/api/admin/users?${params}`, {
-        credentials: 'include'
-      });
+      const response = await api.get(`/api/admin/users?${params}`);
 
-      if (!response.ok) {
-        throw new Error('사용자 데이터를 가져올 수 없습니다');
-      }
-
-      const data = await response.json();
-      setUsers(data.users);
-      setTotalPages(data.total_pages);
+      setUsers(response.data.users);
+      setTotalPages(response.data.total_pages);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -69,42 +62,24 @@ const UserManagement = () => {
 
   const handleUserUpdate = async (userId, updateData) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(updateData)
-      });
-
-      if (!response.ok) {
-        throw new Error('사용자 정보 업데이트에 실패했습니다');
-      }
+      await api.put(`/api/admin/users/${userId}`, updateData);
 
       await fetchUsers();
       setShowUserModal(false);
       setSelectedUser(null);
     } catch (err) {
-      alert(err.message);
+      alert(err.response?.data?.message || err.message || '사용자 정보 업데이트에 실패했습니다');
     }
   };
 
   const handleUserActivation = async (userId, isActive) => {
     try {
       const endpoint = isActive ? 'activate' : 'deactivate';
-      const response = await fetch(`/api/admin/users/${userId}/${endpoint}`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error(`사용자 ${isActive ? '활성화' : '비활성화'}에 실패했습니다`);
-      }
+      await api.post(`/api/admin/users/${userId}/${endpoint}`);
 
       await fetchUsers();
     } catch (err) {
-      alert(err.message);
+      alert(err.response?.data?.message || err.message || `사용자 ${isActive ? '활성화' : '비활성화'}에 실패했습니다`);
     }
   };
 
