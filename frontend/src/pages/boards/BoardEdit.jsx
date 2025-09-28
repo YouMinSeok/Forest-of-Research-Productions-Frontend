@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { fetchBoardPost, updateBoardPost } from '../../api/board';
 import { uploadFile } from '../../api/attachment';
 import {
@@ -23,8 +23,16 @@ Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px'];
 Quill.register(Size, true);
 
 function BoardEdit() {
-  const { category, postId } = useParams();
+  const { boardType, postId } = useParams();
+  const category = boardType;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 현재 URL의 첫 번째 세그먼트를 파악하여 올바른 경로 결정
+  const getBasePath = () => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    return pathSegments[0] || 'board'; // 기본값은 'board'
+  };
 
   // 모든 게시판 말머리 옵션
   const prefixOptions = {
@@ -357,7 +365,8 @@ function BoardEdit() {
 
       await updateBoardPost(postId, updateData);
       alert('게시글이 수정되었습니다.');
-      navigate(`/community/${category}/detail/${postId}`);
+      const basePath = getBasePath();
+      navigate(`/${basePath}/${category}/detail/${postId}`);
     } catch (error) {
       console.error('수정 에러:', error);
       if (error.response?.status === 403) {
