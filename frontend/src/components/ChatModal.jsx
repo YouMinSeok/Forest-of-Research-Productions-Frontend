@@ -126,13 +126,19 @@ function ChatModal({ targetUser, roomId, onClose, onMinimize, isMinimized }) {
     const backendUrl = `https://${hostIp}`;
     const wsUrl = `${protocol}://${hostIp}`;
 
-    console.log('🌐 Backend URL:', backendUrl);
-    console.log('🌐 WebSocket URL:', wsUrl);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🌐 Backend URL:', backendUrl);
+    }
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🌐 WebSocket URL:', wsUrl);
+    }
 
     const token = localStorage.getItem('access_token');
     const fullWsUrl = `${wsUrl}/ws/chat/${roomId}?token=${token}`;
 
-    console.log('🔌 WebSocket 연결 시도:', fullWsUrl);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔌 WebSocket 연결 시도:', fullWsUrl);
+    }
 
     const ws = new WebSocket(fullWsUrl);
 
