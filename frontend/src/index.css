@@ -119,17 +119,9 @@ img {
 }
 
 /* 기본 레이아웃 유틸리티 */
-.text-center {
-  text-align: center;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.text-left {
-  text-align: left;
-}
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.text-left   { text-align: left; }
 
 .no-data {
   padding: 2rem;
@@ -145,86 +137,76 @@ img {
 }
 
 /* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-dark);
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-dark); }
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 var(--space-sm);
-  }
+  .container { padding: 0 var(--space-sm); }
 }
 
-/* Quill 에디터 내용 전역 스타일 - 게시글 보기에서 올바른 표시를 위해 */
+/* ============================= */
+/* Quill 에디터 내용 전용 스타일  */
+/* ============================= */
+/* 목록 */
 .ql-editor ol,
-ol.ql-list {
+.ql-editor ol.ql-list {
   list-style-type: decimal !important;
   padding-left: 1.5em !important;
   margin: 0.5em 0 !important;
+  display: block !important;
 }
 
 .ql-editor ul,
-ul.ql-list {
+.ql-editor ul.ql-list {
   list-style-type: disc !important;
   padding-left: 1.5em !important;
   margin: 0.5em 0 !important;
+  display: block !important;
 }
 
 .ql-editor li,
-li.ql-list {
+.ql-editor li.ql-list {
   list-style: inherit !important;
   margin: 0.2em 0 !important;
   padding-left: 0.3em !important;
   display: list-item !important;
 }
 
-/* 들여쓰기 스타일 */
-.ql-indent-1 { padding-left: 3em !important; }
-.ql-indent-2 { padding-left: 6em !important; }
-.ql-indent-3 { padding-left: 9em !important; }
-.ql-indent-4 { padding-left: 12em !important; }
-.ql-indent-5 { padding-left: 15em !important; }
-.ql-indent-6 { padding-left: 18em !important; }
-.ql-indent-7 { padding-left: 21em !important; }
-.ql-indent-8 { padding-left: 24em !important; }
+/* 들여쓰기 */
+.ql-editor .ql-indent-1 { padding-left: 3em !important; }
+.ql-editor .ql-indent-2 { padding-left: 6em !important; }
+.ql-editor .ql-indent-3 { padding-left: 9em !important; }
+.ql-editor .ql-indent-4 { padding-left: 12em !important; }
+.ql-editor .ql-indent-5 { padding-left: 15em !important; }
+.ql-editor .ql-indent-6 { padding-left: 18em !important; }
+.ql-editor .ql-indent-7 { padding-left: 21em !important; }
+.ql-editor .ql-indent-8 { padding-left: 24em !important; }
 
-/* 중첩된 목록 스타일 */
+/* 중첩 목록 */
 .ql-editor ol ol,
-ol.ql-list ol.ql-list {
+.ql-editor ol.ql-list ol.ql-list {
   list-style-type: lower-alpha !important;
 }
 
 .ql-editor ul ul,
-ul.ql-list ul.ql-list {
+.ql-editor ul.ql-list ul.ql-list {
   list-style-type: circle !important;
 }
 
 .ql-editor ol ol ol,
-ol.ql-list ol.ql-list ol.ql-list {
+.ql-editor ol.ql-list ol.ql-list ol.ql-list {
   list-style-type: lower-roman !important;
 }
 
 .ql-editor ul ul ul,
-ul.ql-list ul.ql-list ul.ql-list {
+.ql-editor ul.ql-list ul.ql-list ul.ql-list {
   list-style-type: square !important;
 }
 
-/* 정렬 스타일 */
-.ql-align-center { text-align: center !important; }
-.ql-align-right { text-align: right !important; }
-.ql-align-justify { text-align: justify !important; }
+/* 정렬 */
+.ql-editor .ql-align-center  { text-align: center !important; }
+.ql-editor .ql-align-right   { text-align: right !important; }
+.ql-editor .ql-align-justify { text-align: justify !important; }
