@@ -573,7 +573,7 @@ function BoardDetail() {
         <div className="title-header">
           {/* 첫 번째 줄: 게시판이름 + 말머리 + 메뉴버튼 */}
           <div className="title-first-line">
-            <div className="board-and-prefix">
+            <div className="title-and-prefix">
               <span className="board-name">
                 {(() => {
                   // post.board 데이터가 있으면 우선 사용
@@ -596,7 +596,12 @@ function BoardDetail() {
                 })()}
               </span>
               {post.prefix && post.prefix !== 'undefined' && (
-                <span className="title-separator">|</span>
+                <>
+                  <span className="title-separator">|</span>
+                  <span className="improved-post-prefix">
+                    {post.prefix.replace(/\[|\]/g, '')}
+                  </span>
+                </>
               )}
             </div>
 
