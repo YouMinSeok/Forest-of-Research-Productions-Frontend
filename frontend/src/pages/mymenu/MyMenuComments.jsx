@@ -25,14 +25,24 @@ function MyMenuComments() {
   }, []);
 
   const fetchMyComments = useCallback(async () => {
+    // currentUser가 없으면 함수 실행하지 않음
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await api.get(`/api/activity/recent-comments?limit=50`);
 
       if (response.data) {
-        const myComments = response.data.filter(comment =>
-          comment.author === currentUser.name || comment.author === currentUser._id
-        );
+        const myComments = response.data.filter(comment => {
+          // comment가 null이거나 undefined인 경우 처리
+          if (!comment || !comment.author) {
+            return false;
+          }
+          return comment.author === currentUser.name || comment.author === currentUser._id;
+        });
 
         if (page === 1) {
           setComments(myComments);
@@ -54,9 +64,15 @@ function MyMenuComments() {
   useEffect(() => {
     if (user) {
       fetchCurrentUser();
+    }
+  }, [fetchCurrentUser, user]);
+
+  // currentUser가 설정된 후에 댓글을 가져옴
+  useEffect(() => {
+    if (currentUser) {
       fetchMyComments();
     }
-  }, [fetchCurrentUser, fetchMyComments, user]);
+  }, [fetchMyComments, currentUser]);
 
   // 로그인하지 않은 경우 안내 컴포넌트 표시
   if (!user) {
