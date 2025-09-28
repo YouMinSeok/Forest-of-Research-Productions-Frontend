@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 import './PermissionManagement.css';
 
-// 환경변수에서 백엔드 주소를 불러옵니다.
-const backendUrl = process.env.REACT_APP_API_BASE_URL;
-if (!backendUrl) {
-  throw new Error("REACT_APP_API_BASE_URL is not defined! Please set it in your environment variables.");
-}
+// api.js를 사용하여 일관된 인증 방식 적용
 
 const PermissionManagement = () => {
   const [permissions, setPermissions] = useState([]);
@@ -28,30 +25,27 @@ const PermissionManagement = () => {
       setLoading(true);
 
       // 권한 목록 가져오기
-      const permissionsResponse = await fetch(`${backendUrl}/api/admin/permissions`, {
-        credentials: 'include'
-      });
-      if (permissionsResponse.ok) {
-        const permissionsData = await permissionsResponse.json();
-        setPermissions(permissionsData);
+      try {
+        const permissionsResponse = await api.get('/api/admin/permissions');
+        setPermissions(permissionsResponse.data);
+      } catch (error) {
+        console.error('권한 목록 로드 실패:', error);
       }
 
       // 역할 목록 가져오기
-      const rolesResponse = await fetch(`${backendUrl}/api/admin/roles`, {
-        credentials: 'include'
-      });
-      if (rolesResponse.ok) {
-        const rolesData = await rolesResponse.json();
-        setRoles(rolesData);
+      try {
+        const rolesResponse = await api.get('/api/admin/roles');
+        setRoles(rolesResponse.data);
+      } catch (error) {
+        console.error('역할 목록 로드 실패:', error);
       }
 
       // 사용자 목록 가져오기
-      const usersResponse = await fetch(`${backendUrl}/api/admin/users?limit=50`, {
-        credentials: 'include'
-      });
-      if (usersResponse.ok) {
-        const usersData = await usersResponse.json();
-        setUsers(usersData.users || []);
+      try {
+        const usersResponse = await api.get('/api/admin/users?limit=50');
+        setUsers(usersResponse.data.users || []);
+      } catch (error) {
+        console.error('사용자 목록 로드 실패:', error);
       }
 
     } catch (err) {
