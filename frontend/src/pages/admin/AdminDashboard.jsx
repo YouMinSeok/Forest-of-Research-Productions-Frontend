@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api'; // api.js 사용
 import './AdminDashboard.css';
-import api from '../../services/api';
-
-
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -37,31 +35,23 @@ const AdminDashboard = () => {
 
   const initializeAdmin = async () => {
     try {
-      console.log('어드민 초기화 요청:', `/api/admin/init-admin`);
-
-      const response = await fetch(`/api/admin/init-admin`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('응답 상태:', response.status);
-      console.log('응답 헤더:', response.headers);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('성공 응답:', data);
-        alert(`어드민 계정 초기화 완료!\n이메일: ${data.email}\n비밀번호: ${data.password}`);
-      } else {
-        const errorText = await response.text();
-        console.error('실패 응답:', errorText);
-        alert(`어드민 초기화 실패\n상태: ${response.status}\n오류: ${errorText}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('어드민 초기화 요청:', `/api/admin/init-admin`);
       }
+
+      const response = await api.post('/api/admin/init-admin');
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('성공 응답:', response.data);
+      }
+      alert(`어드민 계정 초기화 완료!\n이메일: ${response.data.email}\n비밀번호: ${response.data.password}`);
     } catch (error) {
-      console.error('네트워크 오류:', error);
-      alert(`어드민 초기화 중 오류가 발생했습니다\n오류: ${error.message}\nURL: /api/admin/init-admin`);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('초기화 오류:', error);
+      }
+
+      const errorMessage = error.response?.data?.message || error.message || '알 수 없는 오류가 발생했습니다';
+      alert(`어드민 초기화 실패\n오류: ${errorMessage}`);
     }
   };
 
