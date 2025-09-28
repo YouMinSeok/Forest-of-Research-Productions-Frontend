@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 import './SystemStatus.css';
 
-// 환경변수에서 백엔드 주소를 불러옵니다.
-const backendUrl = process.env.REACT_APP_API_BASE_URL;
-if (!backendUrl) {
-  throw new Error("REACT_APP_API_BASE_URL is not defined! Please set it in your environment variables.");
-}
+// api.js를 사용하여 일관된 인증 방식 적용
 
 const SystemStatus = () => {
   const [systemHealth, setSystemHealth] = useState(null);
@@ -27,20 +24,13 @@ const SystemStatus = () => {
   const fetchSystemHealth = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${backendUrl}/api/admin/system/health`, {
-        credentials: 'include'
-      });
+      const response = await api.get('/api/admin/system/health');
 
-      if (!response.ok) {
-        throw new Error('시스템 상태를 가져올 수 없습니다');
-      }
-
-      const data = await response.json();
-      setSystemHealth(data);
+      setSystemHealth(response.data);
       setLastRefresh(new Date());
       setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || '시스템 상태를 가져올 수 없습니다');
     } finally {
       setLoading(false);
     }
