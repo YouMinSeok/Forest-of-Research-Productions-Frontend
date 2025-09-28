@@ -8,13 +8,25 @@
   to = "/index.html"
   status = 200
 
+# API 프록시 설정 (선택사항 - 백엔드가 CORS를 지원하지 않는 경우)
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://your-backend-url.com/api/:splat"
+#   status = 200
+#   force = true
+
 # 환경별 배포 설정
 [context.production.environment]
   NODE_ENV = "production"
   CI = "false"
   ESLINT_NO_DEV_ERRORS = "true"
+  GENERATE_SOURCEMAP = "false"
   REACT_APP_ENV = "production"
   REACT_APP_DISABLE_CONSOLE = "true"
+  # 백엔드 API URL 설정 (HTTPS)
+  REACT_APP_API_BASE_URL = "https://port-0-forest-of-research-productions-backend-m8qrfco7a6ee3b26.sel4.cloudtype.app"
+  REACT_APP_BACKEND_URL = "https://port-0-forest-of-research-productions-backend-m8qrfco7a6ee3b26.sel4.cloudtype.app"
+  REACT_APP_API_URL = "https://port-0-forest-of-research-productions-backend-m8qrfco7a6ee3b26.sel4.cloudtype.app"
 
 [context.deploy-preview.environment]
   NODE_ENV = "development"
