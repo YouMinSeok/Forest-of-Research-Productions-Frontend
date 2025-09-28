@@ -79,8 +79,13 @@ export const isTokenExpired = (token, clockSkewSec = 120) => {
   return nowMs >= (expMs - clockSkewSec * 1000); // 120초 시계 오차 허용
 };
 
-// 디버깅용: 토큰 상태 확인
+// 디버깅용: 토큰 상태 확인 (개발 환경에서만)
 export const debugTokenStatus = () => {
+  // 프로덕션 환경에서는 디버깅 정보를 출력하지 않음
+  if (process.env.NODE_ENV !== 'development') {
+    return { accessToken: null, refreshToken: null };
+  }
+
   const accessToken = getAccessToken();
   const refreshToken = getRefreshToken();
 
@@ -150,8 +155,17 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
-console.log('API_BASE_URL:', API_BASE_URL);
-console.log('NODE_ENV:', process.env.NODE_ENV);
+// 개발 환경에서만 디버그 정보 출력
+if (process.env.NODE_ENV === 'development') {
+  console.log('API_BASE_URL:', API_BASE_URL);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+}
+
+// 개발 환경에서만 디버그 정보 출력
+if (process.env.NODE_ENV === 'development') {
+  console.log('API_BASE_URL:', API_BASE_URL);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+}
 
 // ===========================
 // Axios 인스턴스
