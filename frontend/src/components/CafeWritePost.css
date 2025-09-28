@@ -278,6 +278,81 @@
   text-decoration: underline !important;
 }
 
+/* Quill 에디터 내용 스타일 - 작성 시와 조회 시 일관성 보장 */
+.ql-editor ol,
+.ql-container ol,
+ol.ql-list {
+  list-style-type: decimal !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.ql-editor ul,
+.ql-container ul,
+ul.ql-list {
+  list-style-type: disc !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.ql-editor li,
+.ql-container li,
+li.ql-list {
+  list-style: inherit !important;
+  margin: 0.2em 0 !important;
+  padding-left: 0.3em !important;
+  display: list-item !important;
+}
+
+/* 들여쓰기 스타일 강화 */
+.ql-editor .ql-indent-1,
+.ql-container .ql-indent-1 {
+  padding-left: 3em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-2,
+.ql-container .ql-indent-2 {
+  padding-left: 6em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-3,
+.ql-container .ql-indent-3 {
+  padding-left: 9em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-4,
+.ql-container .ql-indent-4 {
+  padding-left: 12em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-5,
+.ql-container .ql-indent-5 {
+  padding-left: 15em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-6,
+.ql-container .ql-indent-6 {
+  padding-left: 18em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-7,
+.ql-container .ql-indent-7 {
+  padding-left: 21em !important;
+  margin-left: 0 !important;
+}
+
+.ql-editor .ql-indent-8,
+.ql-container .ql-indent-8 {
+  padding-left: 24em !important;
+  margin-left: 0 !important;
+}
+
 /* 프라이버시 옵션 스타일 개선 */
 .privacy-options {
   margin: 25px 0;
