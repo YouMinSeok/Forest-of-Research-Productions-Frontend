@@ -3,6 +3,10 @@ import { SkeletonSearchResult } from './Skeleton';
 import { useOptimizedSkeleton } from '../utils/skeletonHooks';
 import './GroupChatCreateModal.css';
 
+// 토큰 가져오기 함수
+const getAccessToken = () =>
+  sessionStorage.getItem('access_token') || localStorage.getItem('access_token') || null;
+
 function GroupChatCreateModal({ isOpen, onClose, currentUser, onCreateGroup }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -47,12 +51,18 @@ function GroupChatCreateModal({ isOpen, onClose, currentUser, onCreateGroup }) {
 
       const backendUrl = `http://${hostIp}:${port}`;
 
+      const token = getAccessToken();
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${backendUrl}/api/chat/users/search?q=${encodeURIComponent(term)}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers,
       });
 
       if (response.ok) {
