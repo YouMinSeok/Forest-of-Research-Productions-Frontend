@@ -25,6 +25,10 @@ const getBackendUrl = () => {
 
 const backendUrl = getBackendUrl();
 
+// 토큰 가져오기 함수
+const getAccessToken = () =>
+  sessionStorage.getItem('access_token') || localStorage.getItem('access_token') || null;
+
 const PermissionManagement = () => {
   const [permissions, setPermissions] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -77,12 +81,18 @@ const PermissionManagement = () => {
 
   const handleAddPermission = async (userId, permission) => {
     try {
+      const token = getAccessToken();
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${backendUrl}/api/admin/users/${userId}/permissions`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+        headers,
         body: JSON.stringify({ permission })
       });
 
@@ -99,9 +109,16 @@ const PermissionManagement = () => {
 
   const handleRemovePermission = async (userId, permission) => {
     try {
+      const token = getAccessToken();
+      const headers = {};
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${backendUrl}/api/admin/users/${userId}/permissions/${permission}`, {
         method: 'DELETE',
-        credentials: 'include'
+        headers
       });
 
       if (!response.ok) {
