@@ -25,6 +25,12 @@ function MyMenuPosts() {
   }, []);
 
   const fetchMyPosts = useCallback(async () => {
+    // currentUser가 없으면 함수 실행하지 않음
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await api.get(`/api/board/?page=${page}&limit=50`);
@@ -34,9 +40,13 @@ function MyMenuPosts() {
       if (response.data && response.data.posts) {
         console.log('🔍 전체 posts:', response.data.posts);
 
-        const myPosts = response.data.posts.filter(post =>
-          post.writer_id === currentUser._id || post.writer_id === currentUser.id
-        );
+        const myPosts = response.data.posts.filter(post => {
+          // post가 null이거나 undefined인 경우 처리
+          if (!post || !post.writer_id) {
+            return false;
+          }
+          return post.writer_id === currentUser._id || post.writer_id === currentUser.id;
+        });
 
         console.log('🔍 필터링된 내 게시글들:', myPosts);
         console.log('🔍 첫 번째 게시글 상세:', myPosts[0]);
@@ -61,9 +71,15 @@ function MyMenuPosts() {
   useEffect(() => {
     if (user) {
       fetchCurrentUser();
+    }
+  }, [fetchCurrentUser, user]);
+
+  // currentUser가 설정된 후에 게시글을 가져옴
+  useEffect(() => {
+    if (currentUser) {
       fetchMyPosts();
     }
-  }, [fetchCurrentUser, fetchMyPosts, user]);
+  }, [fetchMyPosts, currentUser]);
 
   // 로그인하지 않은 경우 안내 컴포넌트 표시
   if (!user) {
