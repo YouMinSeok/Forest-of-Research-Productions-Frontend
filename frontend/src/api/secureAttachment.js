@@ -180,7 +180,13 @@ export const validateFileType = (file) => {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    // HWP 관련 MIME 타입들 추가
     'application/vnd.hancom.hwp',
+    'application/haansofthwp',
+    'application/vnd.hancom.hwpx',
+    'application/hwpx',
+    'application/x-hwp',
+    'application/octet-stream', // HWP 파일이 종종 이 타입으로 인식됨
     'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp',
     'video/mp4', 'video/avi', 'video/quicktime',
     'audio/mpeg', 'audio/wav',
@@ -204,12 +210,21 @@ export const validateFileType = (file) => {
     };
   }
 
+  // 특별 처리: HWP/HWPX 파일의 경우 확장자로 추가 검증
+  const fileName = file.name.toLowerCase();
+  const isHwpFile = fileName.endsWith('.hwp') || fileName.endsWith('.hwpx');
+
   // MIME 타입 검사
   if (!allowedTypes.includes(file.type)) {
-    return {
-      isValid: false,
-      error: `허용되지 않는 파일 형식입니다. (${file.type})`
-    };
+    // HWP 파일이면서 application/octet-stream인 경우 허용
+    if (isHwpFile && file.type === 'application/octet-stream') {
+      console.log(`✅ HWP 파일 확장자로 허용: ${file.name} (${file.type})`);
+    } else {
+      return {
+        isValid: false,
+        error: `허용되지 않는 파일 형식입니다. (${file.type})`
+      };
+    }
   }
 
   // 파일 크기 검사 (50MB)
