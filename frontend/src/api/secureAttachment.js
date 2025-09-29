@@ -121,15 +121,48 @@ export const downloadFileHelper = async (attachmentId, filename, useToken = fals
       response = await secureDownloadFile(attachmentId);
     }
 
-    // 브라우저에서 파일 다운로드
-    const url = window.URL.createObjectURL(new Blob([response.data]));
+    // 브라우저에서 파일 다운로드 (개선된 버전)
+    console.log('📥 파일 다운로드 시작:', filename);
+    console.log('📊 응답 데이터 타입:', typeof response.data);
+    console.log('📊 응답 데이터 크기:', response.data?.size || response.data?.byteLength || 'unknown');
+
+    // Blob 생성 시 MIME 타입 지정
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/octet-stream'
+    });
+
+    console.log('📦 생성된 Blob 크기:', blob.size);
+
+    // 파일 다운로드
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
+
+    // 한글 파일명 처리 개선
     link.setAttribute('download', filename);
+
+    // 다운로드 실행 전 디버깅
+    console.log('🎯 다운로드 링크 속성:', {
+      href: link.href,
+      download: link.download,
+      filename: filename
+    });
+
+    // 다운로드 실행
     document.body.appendChild(link);
+    console.log('🖱️ 링크 클릭 실행...');
     link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+
+    // 잠시 기다린 후 정리 (브라우저가 다운로드를 시작할 시간)
+    setTimeout(() => {
+      if (document.body.contains(link)) {
+        document.body.removeChild(link);
+      }
+      window.URL.revokeObjectURL(url);
+      console.log('🧹 리소스 정리 완료');
+    }, 1000);
+
+    console.log('✅ 파일 다운로드 완료:', filename);
 
     return { success: true, message: '파일이 다운로드되었습니다.' };
 
