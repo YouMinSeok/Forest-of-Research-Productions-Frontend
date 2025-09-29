@@ -136,6 +136,17 @@ export const downloadFileHelper = async (attachmentId, filename, useToken = fals
   } catch (error) {
     console.error('파일 다운로드 실패:', error);
 
+    // 403 에러이고 토큰 방식을 아직 시도하지 않았다면 토큰 방식으로 재시도
+    if (error.response?.status === 403 && !useToken) {
+      console.log('🔄 403 에러 발생, 토큰 방식으로 재시도...');
+      try {
+        return await downloadFileHelper(attachmentId, filename, true);
+      } catch (retryError) {
+        console.error('토큰 방식 재시도도 실패:', retryError);
+        // 토큰 방식도 실패하면 아래 기본 에러 처리로 진행
+      }
+    }
+
     let errorMessage = '파일 다운로드에 실패했습니다.';
 
     if (error.response?.status === 403) {
