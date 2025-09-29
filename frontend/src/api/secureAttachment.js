@@ -215,7 +215,6 @@ export const validateFileType = (file) => {
   }
 
   // 특별 처리: HWP/PPT 파일의 경우 확장자로 추가 검증
-  const fileName = file.name.toLowerCase();
   const isHwpFile = fileName.endsWith('.hwp') || fileName.endsWith('.hwpx');
   const isPptFile = fileName.endsWith('.ppt') || fileName.endsWith('.pptx');
 
