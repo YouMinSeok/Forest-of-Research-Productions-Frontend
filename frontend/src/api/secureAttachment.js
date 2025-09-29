@@ -178,8 +178,12 @@ export const validateFileType = (file) => {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // PowerPoint 관련 MIME 타입들
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/mspowerpoint',
+    'application/powerpoint',
+    'application/x-mspowerpoint',
     // HWP 관련 MIME 타입들 추가
     'application/vnd.hancom.hwp',
     'application/haansofthwp',
@@ -210,16 +214,22 @@ export const validateFileType = (file) => {
     };
   }
 
-  // 특별 처리: HWP/HWPX 파일의 경우 확장자로 추가 검증
+  // 특별 처리: HWP/PPT 파일의 경우 확장자로 추가 검증
   const fileName = file.name.toLowerCase();
   const isHwpFile = fileName.endsWith('.hwp') || fileName.endsWith('.hwpx');
+  const isPptFile = fileName.endsWith('.ppt') || fileName.endsWith('.pptx');
 
   // MIME 타입 검사
   if (!allowedTypes.includes(file.type)) {
     // HWP 파일이면서 application/octet-stream인 경우 허용
     if (isHwpFile && file.type === 'application/octet-stream') {
       console.log(`✅ HWP 파일 확장자로 허용: ${file.name} (${file.type})`);
-    } else {
+    }
+    // PPT 파일이면서 application/octet-stream인 경우 허용
+    else if (isPptFile && file.type === 'application/octet-stream') {
+      console.log(`✅ PPT 파일 확장자로 허용: ${file.name} (${file.type})`);
+    }
+    else {
       return {
         isValid: false,
         error: `허용되지 않는 파일 형식입니다. (${file.type})`
