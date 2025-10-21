@@ -77,16 +77,18 @@ function TopNav({ onSidebarTypeChange }) {
   return (
     <header className="topnav">
       <div className="topnav-top">
-        <NavLink
-          to="/"
-          className="site-logo"
-          onClick={() => handleTabClick('main', '/')}
-        >
-          <div className="logo-text">연구의숲</div>
-        </NavLink>
-
         <div className="mobile-menu-toggle" onClick={toggleMobileMenu}>
           <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} />
+        </div>
+
+        <div className="center-logo">
+          <NavLink
+            to="/"
+            className="site-logo"
+            onClick={() => handleTabClick('main', '/')}
+          >
+            <div className="logo-text">연구의숲</div>
+          </NavLink>
         </div>
 
         <div className="topnav-auth">
