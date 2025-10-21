@@ -105,15 +105,6 @@ function TopNav({ onSidebarTypeChange }) {
               </li>
               <li>
                 <NavLink
-                  to="/result"
-                  className={isActiveTab('/result') ? 'active' : ''}
-                  onClick={() => handleMobileNavClick('result', '/result')}
-                >
-                  연구성과
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
                   to="/research/연구자료"
                   className={isActiveTab('/research') ? 'active' : ''}
                   onClick={() => handleMobileNavClick('research', '/research/연구자료')}
@@ -123,20 +114,20 @@ function TopNav({ onSidebarTypeChange }) {
               </li>
               <li>
                 <NavLink
+                  to="/result"
+                  className={isActiveTab('/result') ? 'active' : ''}
+                  onClick={() => handleMobileNavClick('result', '/result')}
+                >
+                  연구성과
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to="/ourstory"
                   className={isActiveTab('/ourstory') ? 'active' : ''}
                   onClick={() => handleMobileNavClick('ourstory', '/ourstory')}
                 >
                   우리들이야기
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/mymenu"
-                  className={isActiveTab('/mymenu') ? 'active' : ''}
-                  onClick={() => handleMobileNavClick('mymenu', '/mymenu')}
-                >
-                  마이메뉴
                 </NavLink>
               </li>
               <li className="auth-nav-item">
