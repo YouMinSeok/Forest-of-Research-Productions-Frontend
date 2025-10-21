@@ -49,7 +49,7 @@ function LeftSidebar({ sidebarType = 'main' }) {
     case 'cafe':
       menuContent = (
         <>
-          <div className="sidebar-header">연구카페</div>
+          <div className="sidebar-header">게시판</div>
           <ul className="sidebar-menu">
             <li>
               <NavLink to="/research/연구자료" onClick={handleLinkClick}>
