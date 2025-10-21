@@ -15,8 +15,13 @@
   align-items: center;
   padding: 0.7rem 1.5rem;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-  max-width: 1200px;
-  margin: 0 auto;
+}
+
+.center-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 .site-logo {
@@ -111,7 +116,7 @@
   color: var(--text-primary);
   font-weight: 700;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   transition: all var(--transition-fast);
   border-bottom: 2px solid transparent;
 }
@@ -129,7 +134,7 @@
 .topnav-auth .auth-link {
   color: var(--text-primary);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   transition: color var(--transition-fast);
   padding: 0.5rem 1rem;
@@ -159,7 +164,7 @@
   cursor: pointer;
   padding: 0.7rem 1rem;
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
   transition: all var(--transition-fast);
   height: 100%;
