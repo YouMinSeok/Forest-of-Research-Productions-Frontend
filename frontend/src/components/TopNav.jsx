@@ -77,19 +77,48 @@ function TopNav({ onSidebarTypeChange }) {
   return (
     <header className="topnav">
       <div className="topnav-top">
+        <NavLink
+          to="/"
+          className="site-logo"
+          onClick={() => handleTabClick('main', '/')}
+        >
+          <div className="logo-text">연구의숲</div>
+        </NavLink>
+
         <div className="mobile-menu-toggle" onClick={toggleMobileMenu}>
           <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} />
         </div>
-        <div className="center-logo">
-          <NavLink
-            to="/"
-            className="site-logo"
-            onClick={() => handleTabClick('main', '/')}
-          >
-            <div className="logo-text">연구의숲</div>
-          </NavLink>
+
+        <div className="topnav-auth">
+          {user ? (
+            <div className="user-menu-container" onClick={toggleUserMenu}>
+              <button className="user-btn">
+                <div className="user-icon">
+                  <FontAwesomeIcon icon={faUser} />
+                </div>
+                <span className="user-name">{user.name}</span>
+              </button>
+              {userMenuOpen && (
+                <div className="user-dropdown">
+                  <NavLink to="/mymenu" className="dropdown-item" onClick={() => handleMobileNavClick('mymenu', '/mymenu')}>
+                    <FontAwesomeIcon icon={faUser} />
+                    마이페이지
+                  </NavLink>
+                  <button onClick={handleLogout} className="dropdown-item logout-item">
+                    <FontAwesomeIcon icon={faSignOutAlt} className="logout-icon" />
+                    로그아웃
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <NavLink to="/login" className="auth-link" onClick={() => setMobileMenuOpen(false)}>
+              로그인
+            </NavLink>
+          )}
         </div>
       </div>
+
       <div className={`topnav-lower ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="lower-center">
           <nav className="topnav-menu">
@@ -109,7 +138,7 @@ function TopNav({ onSidebarTypeChange }) {
                   className={isActiveTab('/research') ? 'active' : ''}
                   onClick={() => handleMobileNavClick('research', '/research/연구자료')}
                 >
-                  연구카페
+                  게시판
                 </NavLink>
               </li>
               <li>
@@ -129,40 +158,6 @@ function TopNav({ onSidebarTypeChange }) {
                 >
                   우리들이야기
                 </NavLink>
-              </li>
-              <li className="auth-nav-item">
-                {user ? (
-                  <div className="user-menu-container" onClick={toggleUserMenu}>
-                    <button className="user-btn">
-                      <div className="user-icon">
-                        <FontAwesomeIcon icon={faUser} />
-                      </div>
-                      <span className="user-name">{user.name}</span>
-                    </button>
-                    {userMenuOpen && (
-                      <div className="user-dropdown">
-                        <NavLink to="/mymenu" className="dropdown-item" onClick={() => handleMobileNavClick('mymenu', '/mymenu')}>
-                          <FontAwesomeIcon icon={faUser} />
-                          마이페이지
-                        </NavLink>
-                        <button onClick={handleLogout} className="dropdown-item logout-item">
-                          <FontAwesomeIcon icon={faSignOutAlt} className="logout-icon" />
-                          로그아웃
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="auth-links">
-                    <NavLink to="/login" className="auth-link" onClick={() => setMobileMenuOpen(false)}>
-                      로그인
-                    </NavLink>
-                    <span className="auth-divider">|</span>
-                    <NavLink to="/signup" className="auth-link" onClick={() => setMobileMenuOpen(false)}>
-                      회원가입
-                    </NavLink>
-                  </div>
-                )}
               </li>
             </ul>
           </nav>
