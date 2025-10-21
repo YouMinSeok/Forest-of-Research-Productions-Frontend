@@ -11,17 +11,22 @@
 /* 상단 로고 영역 */
 .topnav-top {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 0.7rem 1.5rem;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .center-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1;
 }
 
 .site-logo {
@@ -36,6 +41,8 @@
 .topnav-auth {
   display: flex;
   align-items: center;
+  margin-right: 1rem;
+  z-index: 10;
 }
 
 .logo-text {
@@ -247,10 +254,20 @@
 @media (max-width: 768px) {
   .topnav-top {
     padding: 0.6rem 1rem;
+    justify-content: space-between;
+  }
+
+  .center-logo {
+    position: static;
+    transform: none;
   }
 
   .mobile-menu-toggle {
     display: flex; /* 모바일에서만 토글 버튼 표시 */
+  }
+
+  .topnav-auth {
+    margin-right: 0;
   }
 
   .topnav-auth {
